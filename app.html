@@ -30,7 +30,12 @@
         /* Product Grid */
         .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .product-card { background: #1a1a24; border-radius: 12px; padding: 10px; border: 1px solid #2a2a3a; display: flex; flex-direction: column; justify-content: space-between; }
-        .product-img { width: 100%; height: 90px; object-fit: contain; background: #0b0b10; border-radius: 8px; margin-bottom: 10px; padding: 5px; }
+        
+        /* Khung ảnh sản phẩm */
+        .img-container { width: 100%; height: 90px; background: #0b0b10; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .product-img { width: 100%; height: 100%; object-fit: contain; }
+        .fallback-icon { font-size: 30px; } /* Icon thay thế nếu không có ảnh */
+
         .product-name { font-size: 13px; font-weight: bold; line-height: 1.4; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 36px; }
         .product-price { color: #00d2ff; font-weight: bold; font-size: 15px; margin-bottom: 8px; }
         .product-stock { font-size: 11px; color: #888; margin-bottom: 8px; }
@@ -42,9 +47,14 @@
 
         /* Bottom Nav */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #12121a; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #1f1f2e; z-index: 100; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #888; font-size: 10px; text-decoration: none; cursor: pointer; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #888; font-size: 10px; text-decoration: none; cursor: pointer; transition: 0.2s; }
         .nav-item.active { color: #ff4d8d; }
         .nav-icon { font-size: 20px; margin-bottom: 4px; }
+
+        /* Ẩn/Hiện các trang */
+        .tab-page { display: none; }
+        .tab-page.active { display: block; }
+        .empty-tab { text-align: center; padding: 50px 20px; color: #888; }
     </style>
 </head>
 <body>
@@ -60,39 +70,77 @@
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="content">
+    <!-- ================= PAGE: DỊCH VỤ ================= -->
+    <div id="page-dichvu" class="content tab-page active">
         <div class="page-title">Dịch vụ</div>
         <div class="page-subtitle">Khám phá kho tài nguyên số.</div>
         
-        <!-- Thanh tìm kiếm -->
         <input type="text" id="search-input" class="search-box" placeholder="🔍 Tìm kiếm sản phẩm (VD: Netflix...)">
 
-        <!-- Danh sách sản phẩm -->
         <div id="product-list" class="product-grid">
             <div class="loading-text">Đang tải sản phẩm...</div>
         </div>
     </div>
 
+    <!-- ================= PAGE: ĐANG CHỜ ================= -->
+    <div id="page-dangcho" class="content tab-page">
+        <div class="page-title">Đang chờ</div>
+        <div class="page-subtitle">Các đơn hàng đang được xử lý.</div>
+        <div class="empty-tab">
+            <span style="font-size: 40px;">⏳</span>
+            <p style="margin-top: 10px;">Chưa có đơn hàng nào đang chờ.</p>
+        </div>
+    </div>
+
+    <!-- ================= PAGE: LỊCH SỬ ================= -->
+    <div id="page-lichsu" class="content tab-page">
+        <div class="page-title">Lịch sử</div>
+        <div class="page-subtitle">Lịch sử mua hàng của bạn.</div>
+        <div class="empty-tab">
+            <span style="font-size: 40px;">📜</span>
+            <p style="margin-top: 10px;">Chưa có lịch sử giao dịch.</p>
+        </div>
+    </div>
+
+    <!-- ================= PAGE: NẠP TIỀN ================= -->
+    <div id="page-naptien" class="content tab-page">
+        <div class="page-title">Nạp tiền</div>
+        <div class="page-subtitle">Nạp tiền vào ví qua ngân hàng.</div>
+        <div class="empty-tab">
+            <span style="font-size: 40px;">💳</span>
+            <p style="margin-top: 10px;">Vui lòng quay lại Bot Telegram để lấy mã QR.</p>
+        </div>
+    </div>
+
+    <!-- ================= PAGE: CÁ NHÂN ================= -->
+    <div id="page-canhân" class="content tab-page">
+        <div class="page-title">Cá nhân</div>
+        <div class="page-subtitle">Thông tin tài khoản của bạn.</div>
+        <div class="empty-tab">
+            <span style="font-size: 40px;">👤</span>
+            <p style="margin-top: 10px;">Đang cập nhật thông tin...</p>
+        </div>
+    </div>
+
     <!-- Bottom Nav -->
     <div class="bottom-nav">
-        <div class="nav-item active">
+        <div class="nav-item active" onclick="switchTab('dichvu', this)">
             <span class="nav-icon">🛍️</span>
             <span>Dịch vụ</span>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" onclick="switchTab('dangcho', this)">
             <span class="nav-icon">⏳</span>
             <span>Đang chờ</span>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" onclick="switchTab('lichsu', this)">
             <span class="nav-icon">📜</span>
             <span>Lịch sử</span>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" onclick="switchTab('naptien', this)">
             <span class="nav-icon">💳</span>
             <span>Nạp tiền</span>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" onclick="switchTab('canhân', this)">
             <span class="nav-icon">👤</span>
             <span>Cá nhân</span>
         </div>
@@ -100,31 +148,56 @@
 
     <!-- Javascript -->
     <script>
-        // Khởi tạo Telegram WebApp
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Mở rộng toàn màn hình
+        tg.expand();
 
-        // Cấu hình Supabase
         const SUPABASE_URL = 'https://jukdjwdhuvlrwiulhasj.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_DcGDl8VrFCDKc9mRxNmlqQ_qVm_Aysl';
 
         const productList = document.getElementById('product-list');
         const searchInput = document.getElementById('search-input');
         
-        // Hàm format tiền tệ
+        // Hàm chuyển Tab (Menu dưới)
+        function switchTab(tabId, element) {
+            // 1. Ẩn tất cả các trang
+            document.querySelectorAll('.tab-page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // 2. Hiện trang được chọn
+            document.getElementById('page-' + tabId).classList.add('active');
+
+            // 3. Đổi màu nút được chọn ở Bottom Nav
+            document.querySelectorAll('.nav-item').forEach(nav => {
+                nav.classList.remove('active');
+            });
+            element.classList.add('active');
+            
+            // Nếu chuyển sang tab Dịch vụ thì load lại sản phẩm (nếu cần)
+            if(tabId === 'dichvu' && productList.innerHTML.includes('Đang tải')) {
+                fetchProducts();
+            }
+        }
+
         const formatMoney = (amount) => {
             return new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
         };
 
-        // Hàm lấy sản phẩm
+        // Hàm xử lý hiển thị ảnh (Nếu không có ảnh thì hiện Icon)
+        function getImageHtml(imgUrl, name) {
+            if (imgUrl && imgUrl !== 'null' && imgUrl.trim() !== '') {
+                return `<img src="${imgUrl}" class="product-img" onerror="this.parentNode.innerHTML='<span class=\\'fallback-icon\\'>📦</span>'">`;
+            } else {
+                // Nếu API không trả về ảnh, hiện icon hộp quà
+                return `<span class="fallback-icon">📦</span>`;
+            }
+        }
+
         async function fetchProducts(query = '') {
             productList.innerHTML = '<div class="loading-text">Đang tải sản phẩm...</div>';
             
             try {
-                // Gọi API Supabase (giới hạn 50 sản phẩm để web không bị lag)
                 let url = `${SUPABASE_URL}/rest/v1/products?select=*&limit=50&order=created_at.desc`;
-                
-                // Nếu có tìm kiếm thì thêm điều kiện lọc
                 if (query) {
                     url += `&name=ilike.%25${encodeURIComponent(query)}%25`;
                 }
@@ -136,26 +209,21 @@
                     }
                 });
                 
-                if (!response.ok) {
-                    throw new Error(`Lỗi HTTP: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`Lỗi HTTP: ${response.status}`);
                 
                 const products = await response.json();
                 
                 if (!products || products.length === 0) {
-                    productList.innerHTML = `
-                        <div style="grid-column: span 2; text-align: center; padding: 30px; background: #1a1a24; border-radius: 12px;">
-                            <div style="font-size: 40px; margin-bottom: 10px;">📦</div>
-                            <div style="color: #888;">Không tìm thấy sản phẩm nào.</div>
-                        </div>`;
+                    productList.innerHTML = `<div style="grid-column: span 2; text-align: center; padding: 30px;"><div style="font-size: 40px;">📦</div><div style="color: #888; margin-top:10px;">Không tìm thấy sản phẩm nào.</div></div>`;
                     return;
                 }
                 
-                // Render sản phẩm
                 productList.innerHTML = products.map(p => `
                     <div class="product-card">
                         <div>
-                            <img src="${p.image_url || 'https://via.placeholder.com/150'}" class="product-img" onerror="this.src='https://via.placeholder.com/150'">
+                            <div class="img-container">
+                                ${getImageHtml(p.image_url, p.name)}
+                            </div>
                             <div class="product-name">${p.name}</div>
                             <div class="product-price">${formatMoney(p.price)}</div>
                             <div class="product-stock">Kho: ${p.stock}</div>
@@ -165,12 +233,10 @@
                 `).join('');
                 
             } catch (error) {
-                console.error(error);
                 productList.innerHTML = `<div class="error-text">Lỗi kết nối: ${error.message}</div>`;
             }
         }
 
-        // Xử lý sự kiện tìm kiếm (Đợi 500ms sau khi ngừng gõ mới tìm)
         let typingTimer;
         searchInput.addEventListener('input', (e) => {
             clearTimeout(typingTimer);
@@ -179,12 +245,10 @@
             }, 500);
         });
 
-        // Hàm xử lý khi bấm mua
         function buyProduct(id) {
             tg.showAlert("Chuẩn bị mở luồng thanh toán cho SP ID: " + id);
         }
 
-        // Chạy lần đầu khi mở App
         document.addEventListener('DOMContentLoaded', () => {
             fetchProducts();
         });
