@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GIAREQUOCTE - Mini App</title>
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* TONE MÀU XANH HỒNG NEON */
+            --bg-color: #0b0c14;          /* Nền đen pha xanh tím */
+            --card-bg: #141625;           /* Nền card xanh đen */
+            --text-main: #ffffff;
+            --text-muted: #9aa0b5;
+            --accent-color: #ff3366;      /* Hồng Neon chủ đạo */
+            --accent-secondary: #00e5ff;  /* Xanh Cyan điểm xuyết */
+            --accent-glow: rgba(255, 51, 102, 0.25);
+            --nav-bg: #0e0f19;
+            --danger-color: #ff4d4f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 51, 102, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
+            color: var(--text-main);
+            padding-bottom: 80px; 
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* --- HEADER USER PROFILE --- */
+        .header-profile {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 16px;
+            margin: 15px;
+            border: 1px solid rgba(255, 51, 102, 0.15);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-color);
+            background: #333;
+            object-fit: cover;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .user-details h3 {
+            font-size: 16px;
+            margin-bottom: 4px;
+            color: #fff;
+        }
+
+        .user-details p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .id-badge {
+            background: rgba(255, 51, 102, 0.1);
+            border: 1px solid rgba(255, 51, 102, 0.3);
+            color: var(--accent-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* --- NỘI DUNG CHÍNH --- */
+        .content-section {
+            display: none;
+            padding: 0 15px;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            margin-top: 10px;
+            background: linear-gradient(90deg, #fff, var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        /* --- TAB NẠP TIỀN --- */
+        .balance-title {
+            font-size: 14px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .balance-amount {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .balance-usd {
+            font-size: 14px;
+            color: var(--accent-secondary); /* Màu xanh cyan */
+            margin-bottom: 20px;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-color), #cc0033);
+            color: white;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid rgba(0, 229, 255, 0.4); /* Viền xanh cyan */
+        }
+        
+        .btn-outline i {
+            color: var(--accent-secondary);
+        }
+
+        /* --- TAB DỊCH VỤ --- */
+        .search-box {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 51, 102, 0.2);
+        }
+
+        .search-box i {
+            color: var(--accent-color);
+        }
+
+        .search-box input {
+            background: transparent;
+            border: none;
+            color: white;
+            width: 100%;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .category-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .category-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .cat-btn {
+            background: var(--card-bg);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            white-space: nowrap;
+            border: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+        }
+
+        .cat-btn.active {
+            background: rgba(255, 51, 102, 0.15);
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            opacity: 0.8;
+            color: var(--accent-color);
+            text-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        /* --- THANH ĐIỀU HƯỚNG DƯỚI ĐÁY --- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--nav-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid rgba(255, 51, 102, 0.2);
+            padding-bottom: env(safe-area-inset-bottom, 10px);
+            z-index: 100;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 11px;
+            gap: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 20%;
+        }
+
+        .nav-item i {
+            font-size: 18px;
+        }
+
+        .nav-item.active {
+            color: var(--accent-color);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* Hiệu ứng Loading */
+        #loading {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        
+        .spinner {
+            border: 3px solid rgba(255, 51, 102, 0.1);
+            border-top: 3px solid var(--accent-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Screen -->
+    <div id="loading">
+        <div class="spinner"></div>
+        <div>Đang kết nối...</div>
+    </div>
+
+    <!-- HEADER -->
+    <div class="header-profile" id="profile-header" style="display:none;">
+        <div class="user-info">
+            <img src="" alt="Avatar" class="avatar" id="user-avatar">
+            <div class="user-details">
+                <h3 id="user-name">Loading...</h3>
+                <p id="user-username">@loading</p>
+            </div>
+        </div>
+        <div class="id-badge" onclick="copyID()">
+            <span>ID: </span>
+            <span id="user-id">0</span>
+            <i class="fa-regular fa-copy" style="margin-left: 5px;"></i>
+        </div>
+    </div>
+
+    <!-- TAB 1: DỊCH VỤ -->
+    <div class="content-section active" id="tab-services">
+        <div class="section-title">Dịch vụ</div>
+        <div class="section-subtitle">Khám phá kho tài nguyên số của GIAREQUOCTE.</div>
+        
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Tìm kiếm dịch vụ...">
+        </div>
+
+        <div class="category-scroll">
+            <div class="cat-btn active">Tất cả</div>
+            <div class="cat-btn">Mạng xã hội</div>
+            <div class="cat-btn">TMĐT</div>
+            <div class="cat-btn">Ứng dụng OTT</div>
+        </div>
+
+        <div class="card empty-state">
+            <i class="fa-solid fa-box-open"></i>
+            <p>Chưa có dữ liệu sản phẩm.</p>
+        </div>
+    </div>
+
+    <!-- TAB 2: NẠP TIỀN -->
+    <div class="content-section" id="tab-deposit">
+        <div class="section-title">Nạp tiền</div>
+        <div class="section-subtitle">Nạp tự động qua VietQR hoặc USDT BEP20.</div>
+        
+        <div class="card">
+            <div class="balance-title">
+                <i class="fa-solid fa-wallet"></i> SỐ DƯ TÀI KHOẢN
+            </div>
+            <div class="balance-amount">0 đ</div>
+            <div class="balance-usd">≈ 0.00 USDT</div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="showQR()">
+                    <i class="fa-solid fa-building-columns"></i> Nạp VietQR
+                </button>
+                <button class="btn btn-outline" onclick="alert('Tính năng nạp USDT đang cập nhật!')">
+                    <i class="fa-brands fa-btc"></i> Nạp USDT
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: ĐANG CHỜ -->
+    <div class="content-section" id="tab-waiting">
+        <div class="section-title">Đang chờ</div>
+        <div class="section-subtitle">Các phiên đang chờ mã OTP.</div>
+        <div class="card empty-state">
+            <i class="fa-regular fa-clock"></i>
+            <p>Chưa có phiên đang hoạt động</p>
+        </div>
+    </div>
+
+    <!-- TAB 4: LỊCH SỬ -->
+    <div class="content-section" id="tab-history">
+        <div class="section-title">Lịch sử</div>
+        <div class="section-subtitle">Đơn thuê gần đây của bạn.</div>
+        <div class="card empty-state">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <p>Chưa có lịch sử giao dịch</p>
+        </div>
+    </div>
+
+    <!-- TAB 5: CÁ NHÂN -->
+    <div class="content-section" id="tab-profile">
+        <div class="section-title">Cá nhân</div>
+        <div class="section-subtitle">Thông tin tài khoản của bạn.</div>
+        
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;">
+                <div style="color: var(--text-muted);"><i class="fa-solid fa-user"></i> Telegram ID</div>
+                <div id="profile-id" style="font-weight: bold; color: var(--accent-color);">0</div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;">
+                <div style="color: var(--text-muted);"><i class="fa-solid fa-language"></i> Ngôn ngữ</div>
+                <div style="font-weight: bold; color: var(--accent-secondary);">VI</div>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <div style="color: var(--text-muted);"><i class="fa-solid fa-wallet"></i> Số dư tài khoản</div>
+                <div style="font-weight: bold;">0 đ</div>
+            </div>
+        </div>
+
+        <button class="btn btn-outline" style="width: 100%; margin-top: 10px;" onclick="window.Telegram.WebApp.openTelegramLink('https://t.me/dvamod2k15')">
+            <i class="fa-solid fa-headset"></i> Liên hệ hỗ trợ
+        </button>
+    </div>
+
+    <!-- BOTTOM NAVIGATION -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('services', this)">
+            <i class="fa-solid fa-border-all"></i>
+            <span>Dịch vụ</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('waiting', this)">
+            <i class="fa-regular fa-clock"></i>
+            <span>Đang chờ</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('history', this)">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>Lịch sử</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('deposit', this)">
+            <i class="fa-solid fa-envelope-open-text"></i>
+            <span>Nạp tiền</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('profile', this)">
+            <i class="fa-regular fa-user"></i>
+            <span>Cá nhân</span>
+        </div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+
+        let user = tg.initDataUnsafe?.user;
+        
+        if (user) {
+            document.getElementById('user-name').innerText = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+            document.getElementById('user-username').innerText = user.username ? '@' + user.username : 'Không có username';
+            document.getElementById('user-id').innerText = user.id;
+            document.getElementById('profile-id').innerText = user.id;
+            
+            if (user.photo_url) {
+                document.getElementById('user-avatar').src = user.photo_url;
+            } else {
+                // Avatar tự động màu Hồng
+                document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${user.first_name}&background=ff3366&color=fff`;
+            }
+        } else {
+            // Chạy test
+            document.getElementById('user-name').innerText = "Văn An |";
+            document.getElementById('user-username').innerText = "@dvamod2k15";
+            document.getElementById('user-id').innerText = "5772343324";
+            document.getElementById('profile-id').innerText = "5772343324";
+            document.getElementById('user-avatar').src = "https://ui-avatars.com/api/?name=VA&background=ff3366&color=fff";
+        }
+
+        setTimeout(() => {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('profile-header').style.display = 'flex';
+        }, 800);
+
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('tab-' + tabId).classList.add('active');
+            element.classList.add('active');
+            
+            tg.HapticFeedback.impactOccurred('light');
+        }
+
+        function copyID() {
+            let id = document.getElementById('user-id').innerText;
+            navigator.clipboard.writeText(id);
+            tg.showAlert("Đã copy ID Telegram: " + id);
+        }
+
+        function showQR() {
+            let uid = document.getElementById('user-id').innerText;
+            let qrUrl = `https://vietqr.app/img?acc=1059961263&bank=Vietcombank&holder=DANG+VAN+AN&template=compact&showinfo=true&addInfo=NAPVI_${uid}`;
+            
+            let qrContainer = document.createElement('div');
+            qrContainer.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(11,12,20,0.95);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:1000; padding: 20px;";
+            qrContainer.innerHTML = `
+                <h2 style="color:#ff3366;margin-bottom:20px; font-size: 18px;">Quét QR để nạp tiền</h2>
+                <img src="${qrUrl}" style="width:100%;max-width:300px;border-radius:12px;margin-bottom:20px; box-shadow: 0 0 25px rgba(255,51,102,0.4);">
+                <p style="color:#9aa0b5;margin-bottom:20px;text-align:center;">Nội dung CK: <strong style="color:white;">NAPVI_${uid}</strong></p>
+                <button onclick="this.parentElement.remove()" style="padding:12px 40px;border-radius:12px;border:none;background:linear-gradient(135deg, #ff3366, #cc0033);color:white;font-weight:bold;font-size:16px;">Đóng</button>
+            `;
+            document.body.appendChild(qrContainer);
+        }
+    </script>
+</body>
+</html>
