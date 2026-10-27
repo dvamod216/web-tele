@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GIAREQUOCTE - Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS GIỮ NGUYÊN CỦA MÀY */
+        :root {
+            --bg-color: #0b0c14; --card-bg: rgba(20, 22, 37, 0.85); --text-main: #ffffff;
+            --text-muted: #9aa0b5; --accent-color: #ff3366; --accent-secondary: #00e5ff;
+            --accent-glow: rgba(255, 51, 102, 0.25); --nav-bg: rgba(14, 15, 25, 0.95);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 80px; overflow-x: hidden; min-height: 100vh; position: relative; }
+        #neon-rain { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0.6; }
+        .custom-header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(11, 12, 20, 0.9); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 99; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .close-btn { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; justify-content: center; align-items: center; cursor: pointer; color: white; font-size: 18px; border: none; }
+        .header-title { text-align: left; flex-grow: 1; margin-left: 15px; }
+        .brand { font-size: 15px; font-weight: 800; color: var(--accent-secondary); display: flex; align-items: center; gap: 6px; letter-spacing: 1px; }
+        .brand .dot { width: 8px; height: 8px; background: var(--accent-secondary); border-radius: 50%; box-shadow: 0 0 8px var(--accent-secondary); }
+        .subtitle { font-size: 13px; font-weight: 800; color: white; letter-spacing: 1px; margin-top: 2px; }
+        .lang-toggle { display: flex; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 3px; }
+        .lang-toggle span { padding: 4px 12px; font-size: 12px; font-weight: bold; color: var(--text-muted); cursor: pointer; border-radius: 18px; transition: 0.2s; }
+        .lang-toggle span.active { background: var(--accent-secondary); color: #000; }
+        .header-profile { display: flex; align-items: center; justify-content: space-between; background: var(--card-bg); backdrop-filter: blur(10px); padding: 15px; border-radius: 16px; margin: 15px; border: 1px solid rgba(255, 51, 102, 0.15); }
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--accent-color); background: #333; object-fit: cover; }
+        .user-details h3 { font-size: 16px; margin-bottom: 4px; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .role-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
+        .role-badge.admin { background: rgba(255, 184, 0, 0.2); color: #ffb800; border: 1px solid #ffb800; }
+        .role-badge.customer { background: rgba(0, 229, 255, 0.1); color: var(--accent-secondary); border: 1px solid var(--accent-secondary); }
+        .user-details p { font-size: 13px; color: var(--text-muted); }
+        .id-badge { background: rgba(255, 51, 102, 0.1); border: 1px solid rgba(255, 51, 102, 0.3); color: var(--accent-color); padding: 6px 12px; border-radius: 20px; font-size: 12px; display: flex; align-items: center; gap: 6px; }
+        .content-section { display: none; padding: 0 15px; }
+        .content-section.active { display: block; }
+        .section-title { font-size: 22px; font-weight: bold; margin-bottom: 5px; margin-top: 10px; color: #fff; }
+        .section-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 15px; }
+        .card { background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .balance-title { font-size: 14px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .balance-amount { font-size: 36px; font-weight: bold; margin-bottom: 5px; color: #fff; }
+        .balance-usd { font-size: 14px; color: var(--accent-secondary); margin-bottom: 20px; }
+        .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn { padding: 14px; border-radius: 12px; border: none; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { background: var(--accent-color); color: white; }
+        .btn-outline { background: transparent; color: var(--text-main); border: 1px solid var(--accent-secondary); }
+        .empty-state { text-align: center; padding: 40px 0; color: var(--text-muted); }
+        .empty-state i { font-size: 40px; margin-bottom: 15px; color: var(--accent-color); }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--nav-bg); display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid rgba(255, 51, 102, 0.2); z-index: 100; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; gap: 5px; width: 20%; }
+        .nav-item i { font-size: 18px; }
+        .nav-item.active { color: var(--accent-color); }
+        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999; color: var(--accent-color); font-weight: bold; transition: opacity 0.3s; }
+        .spinner { border: 3px solid rgba(255, 51, 102, 0.1); border-top: 3px solid var(--accent-color); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <canvas id="neon-rain"></canvas>
+    
+    <!-- MÀN HÌNH CHỜ -->
+    <div id="loading"><div class="spinner"></div><div id="loading-text">Đang kết nối...</div></div>
+
+    <div class="custom-header" id="top-header" style="display:none;">
+        <button class="close-btn" onclick="window.Telegram.WebApp.close()"><i class="fa-solid fa-xmark"></i></button>
+        <div class="header-title"><div class="brand"><span class="dot"></span> GIAREQUOCTE</div><div class="subtitle">Mini App</div></div>
+        <div class="lang-toggle"><span class="active" onclick="setLang('vi', this)">VI</span><span onclick="setLang('en', this)">EN</span></div>
+    </div>
+
+    <div class="header-profile" id="profile-header" style="display:none;">
+        <div class="user-info">
+            <img src="" alt="Avatar" class="avatar" id="user-avatar">
+            <div class="user-details">
+                <h3><span id="user-name">Loading...</span><span id="role-badge" class="role-badge customer">Khách hàng</span></h3>
+                <p id="user-username">@loading</p>
+            </div>
+        </div>
+        <div class="id-badge" onclick="copyID()"><span>ID: </span><span id="user-id">0</span><i class="fa-regular fa-copy" style="margin-left: 5px;"></i></div>
+    </div>
+
+    <div class="content-section active" id="tab-services">
+        <div class="section-title">Dịch vụ</div>
+        <div class="section-subtitle">Khám phá kho tài nguyên số.</div>
+        <div class="card empty-state"><i class="fa-solid fa-box-open"></i><p>Chưa có dữ liệu sản phẩm.</p></div>
+    </div>
+
+    <div class="content-section" id="tab-deposit">
+        <div class="section-title">Nạp tiền</div>
+        <div class="section-subtitle">Nạp tự động qua VietQR.</div>
+        <div class="card">
+            <div class="balance-title"><i class="fa-solid fa-wallet"></i> SỐ DƯ TÀI KHOẢN</div>
+            <div class="balance-amount" id="display-balance">0 đ</div>
+            <div class="balance-usd" id="display-usdt">≈ 0.00 USDT</div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="showQR()"><i class="fa-solid fa-building-columns"></i> Nạp VietQR</button>
+                <button class="btn btn-outline"><i class="fa-brands fa-btc"></i> Nạp USDT</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section" id="tab-waiting">
+        <div class="section-title">Đang chờ</div>
+        <div class="card empty-state"><i class="fa-regular fa-clock"></i><p>Chưa có phiên đang hoạt động</p></div>
+    </div>
+
+    <div class="content-section" id="tab-history">
+        <div class="section-title">Lịch sử</div>
+        <div class="card empty-state"><i class="fa-solid fa-clock-rotate-left"></i><p>Chưa có lịch sử giao dịch</p></div>
+    </div>
+
+    <div class="content-section" id="tab-profile">
+        <div class="section-title">Cá nhân</div>
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                <div>Telegram ID</div>
+                <div id="profile-id" style="font-weight: bold; color: var(--accent-color);">0</div>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <div>Số dư</div>
+                <div id="profile-balance" style="font-weight: bold;">0 đ</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('services', this)"><i class="fa-solid fa-border-all"></i><span>Dịch vụ</span></div>
+        <div class="nav-item" onclick="switchTab('waiting', this)"><i class="fa-regular fa-clock"></i><span>Đang chờ</span></div>
+        <div class="nav-item" onclick="switchTab('history', this)"><i class="fa-solid fa-clock-rotate-left"></i><span>Lịch sử</span></div>
+        <div class="nav-item" onclick="switchTab('deposit', this)"><i class="fa-solid fa-envelope-open-text"></i><span>Nạp tiền</span></div>
+        <div class="nav-item" onclick="switchTab('profile', this)"><i class="fa-regular fa-user"></i><span>Cá nhân</span></div>
+    </div>
+
+    <!-- NHÚNG SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // 1. ÉP TẮT MÀN HÌNH CHỜ SAU 2 GIÂY DÙ CÓ LỖI GÌ
+        const loadingTimeout = setTimeout(function() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('top-header').style.display = 'flex';
+            document.getElementById('profile-header').style.display = 'flex';
+        }, 2000);
+
+        // 2. KHỞI TẠO TELEGRAM
+        let tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.ready();
+            tg.expand();
+        }
+
+        // 3. LẤY THÔNG TIN USER
+        try {
+            let user = tg?.initDataUnsafe?.user;
+            let currentUserId = user ? user.id : "5772343324"; 
+
+            if (user) {
+                document.getElementById('user-name').innerText = user.first_name;
+                document.getElementById('user-username').innerText = user.username ? '@' + user.username : '';
+                document.getElementById('user-id').innerText = user.id; 
+                document.getElementById('profile-id').innerText = user.id;
+                document.getElementById('user-avatar').src = user.photo_url || `https://ui-avatars.com/api/?name=${user.first_name}&background=ff3366&color=fff`;
+                
+                let roleBadge = document.getElementById('role-badge');
+                if (user.id === 5772343324) { roleBadge.innerText = "Admin"; roleBadge.className = "role-badge admin"; }
+            } else {
+                // Chạy test ngoài Telegram
+                document.getElementById('user-name').innerText = "Khách Test";
+                document.getElementById('user-id').innerText = "5772343324";
+                document.getElementById('profile-id').innerText = "5772343324";
+                document.getElementById('user-avatar').src = "https://ui-avatars.com/api/?name=VA&background=ff3366&color=fff";
+            }
+
+            // 4. GỌI SUPABASE
+            const SUPABASE_URL = "https://jukdjwdhuvlrwiulhasj.supabase.co";
+            const SUPABASE_KEY = "sb_publishable_DcGDl8VrFCDKc9mRxNmlqQ_qVm_Aysl"; 
+            
+            if (window.supabase) {
+                const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                
+                async function fetchRealBalance(userId) {
+                    try {
+                        let { data, error } = await supabase.from('users').select('balance').eq('user_id', userId);
+                        if (error) throw error;
+                        let bal = (data && data.length > 0) ? data[0].balance : 0;
+                        document.getElementById('display-balance').innerText = bal.toLocaleString('vi-VN') + ' đ';
+                        document.getElementById('profile-balance').innerText = bal.toLocaleString('vi-VN') + ' đ';
+                    } catch (error) { 
+                        console.log("Lỗi Supabase:", error); 
+                    }
+                }
+                fetchRealBalance(currentUserId);
+            } else {
+                document.getElementById('loading-text').innerText = "Lỗi: Không tải được Supabase";
+            }
+
+        } catch (e) {
+            console.error("Lỗi khởi tạo:", e);
+        }
+
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active'); element.classList.add('active');
+        }
+        function copyID() { navigator.clipboard.writeText(document.getElementById('user-id').innerText); if(tg) tg.showAlert("Đã copy ID!"); }
+        function setLang() {}
+        function showQR() {
+            let uid = document.getElementById('user-id').innerText;
+            let qrUrl = `https://vietqr.app/img?acc=1059961263&bank=Vietcombank&holder=DANG+VAN+AN&template=compact&showinfo=true&addInfo=NAPVI_${uid}`;
+            let qrContainer = document.createElement('div'); qrContainer.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(11,12,20,0.95);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:1000;";
+            qrContainer.innerHTML = `<img src="${qrUrl}" style="width:80%;max-width:300px;border-radius:12px;margin-bottom:20px;"><button onclick="this.parentElement.remove()" style="padding:12px 40px;border-radius:12px;border:none;background:#ff3366;color:white;font-weight:bold;">Đóng</button>`;
+            document.body.appendChild(qrContainer);
+        }
+    </script>
+</body>
+</html>
