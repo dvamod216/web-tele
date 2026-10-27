@@ -34,7 +34,7 @@
         /* Khung ảnh sản phẩm */
         .img-container { width: 100%; height: 90px; background: #0b0b10; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; overflow: hidden; }
         .product-img { width: 100%; height: 100%; object-fit: contain; }
-        .fallback-icon { font-size: 30px; } /* Icon thay thế nếu không có ảnh */
+        .fallback-icon { font-size: 30px; }
 
         .product-name { font-size: 13px; font-weight: bold; line-height: 1.4; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 36px; }
         .product-price { color: #00d2ff; font-weight: bold; font-size: 15px; margin-bottom: 8px; }
@@ -157,38 +157,27 @@
         const productList = document.getElementById('product-list');
         const searchInput = document.getElementById('search-input');
         
-        // Hàm chuyển Tab (Menu dưới)
+        // HÀM CHUYỂN TAB (Mấu chốt để bấm được thanh dưới)
         function switchTab(tabId, element) {
-            // 1. Ẩn tất cả các trang
             document.querySelectorAll('.tab-page').forEach(page => {
                 page.classList.remove('active');
             });
-            
-            // 2. Hiện trang được chọn
             document.getElementById('page-' + tabId).classList.add('active');
-
-            // 3. Đổi màu nút được chọn ở Bottom Nav
             document.querySelectorAll('.nav-item').forEach(nav => {
                 nav.classList.remove('active');
             });
             element.classList.add('active');
-            
-            // Nếu chuyển sang tab Dịch vụ thì load lại sản phẩm (nếu cần)
-            if(tabId === 'dichvu' && productList.innerHTML.includes('Đang tải')) {
-                fetchProducts();
-            }
         }
 
         const formatMoney = (amount) => {
             return new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
         };
 
-        // Hàm xử lý hiển thị ảnh (Nếu không có ảnh thì hiện Icon)
-        function getImageHtml(imgUrl, name) {
+        // Xử lý ảnh: Có ảnh thì hiện ảnh, không có thì hiện Icon 📦
+        function getImageHtml(imgUrl) {
             if (imgUrl && imgUrl !== 'null' && imgUrl.trim() !== '') {
                 return `<img src="${imgUrl}" class="product-img" onerror="this.parentNode.innerHTML='<span class=\\'fallback-icon\\'>📦</span>'">`;
             } else {
-                // Nếu API không trả về ảnh, hiện icon hộp quà
                 return `<span class="fallback-icon">📦</span>`;
             }
         }
@@ -222,7 +211,7 @@
                     <div class="product-card">
                         <div>
                             <div class="img-container">
-                                ${getImageHtml(p.image_url, p.name)}
+                                ${getImageHtml(p.image_url)}
                             </div>
                             <div class="product-name">${p.name}</div>
                             <div class="product-price">${formatMoney(p.price)}</div>
