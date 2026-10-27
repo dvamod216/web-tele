@@ -66,7 +66,7 @@
         <div class="page-subtitle">Khám phá kho tài nguyên số.</div>
         
         <!-- Thanh tìm kiếm -->
-        <input type="text" id="search-input" class="search-box" placeholder="🔍 Tìm kiếm sản phẩm (Ví dụ: Netflix, ChatGPT...)">
+        <input type="text" id="search-input" class="search-box" placeholder="🔍 Tìm kiếm sản phẩm (VD: Netflix...)">
 
         <!-- Danh sách sản phẩm -->
         <div id="product-list" class="product-grid">
@@ -166,11 +166,11 @@
                 
             } catch (error) {
                 console.error(error);
-                productList.innerHTML = `<div class="error-text">Lỗi kết nối Database: ${error.message}</div>`;
+                productList.innerHTML = `<div class="error-text">Lỗi kết nối: ${error.message}</div>`;
             }
         }
 
-        // Xử lý sự kiện tìm kiếm (Đợi 500ms sau khi ngừng gõ mới tìm để tránh spam API)
+        // Xử lý sự kiện tìm kiếm (Đợi 500ms sau khi ngừng gõ mới tìm)
         let typingTimer;
         searchInput.addEventListener('input', (e) => {
             clearTimeout(typingTimer);
@@ -179,7 +179,7 @@
             }, 500);
         });
 
-        // Hàm xử lý khi bấm mua (Sẽ code sau)
+        // Hàm xử lý khi bấm mua
         function buyProduct(id) {
             tg.showAlert("Chuẩn bị mở luồng thanh toán cho SP ID: " + id);
         }
