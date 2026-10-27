@@ -161,72 +161,97 @@
         <div class="nav-item" onclick="switchTab('profile', this)"><i class="fa-regular fa-user"></i><span data-vi="Cá nhân" data-en="Profile">Cá nhân</span></div>
     </div>
 
+    <!-- DÙNG PHIÊN BẢN SUPABASE CDN MỚI NHẤT -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // CẤU HÌNH SUPABASE
-        const SUPABASE_URL = "https://jukdjwdhuvlrwiulhasj.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_DcGDl8VrFCDKc9mRxNmlqQ_qVm_Aysl"; 
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        // NEON RAIN
-        const canvas = document.getElementById('neon-rain'); const ctx = canvas.getContext('2d'); let width, height, particles = [];
-        function resizeCanvas() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
-        window.addEventListener('resize', resizeCanvas); resizeCanvas(); const colors = ['#ff3366', '#00e5ff', '#ffffff'];
-        class Particle {
-            constructor() { this.x = Math.random() * width; this.y = Math.random() * height - height; this.size = Math.random() * 2 + 1; this.speedY = Math.random() * 3 + 1; this.color = colors[Math.floor(Math.random() * colors.length)]; this.opacity = Math.random() * 0.5 + 0.3; }
-            update() { this.y += this.speedY; if (this.y > height) { this.y = -10; this.x = Math.random() * width; } }
-            draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fillStyle = this.color; ctx.globalAlpha = this.opacity; ctx.shadowBlur = 10; ctx.shadowColor = this.color; ctx.fill(); ctx.globalAlpha = 1; ctx.shadowBlur = 0; }
-        }
-        function initParticles() { particles = []; let count = window.innerWidth < 600 ? 50 : 100; for (let i = 0; i < count; i++) particles.push(new Particle()); }
-        function animateParticles() { ctx.clearRect(0, 0, width, height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateParticles); }
-        initParticles(); animateParticles();
-
-        let tg = window.Telegram.WebApp; tg.ready(); tg.expand(); let user = tg.initDataUnsafe?.user;
-        let currentUserId = user ? user.id : "5772343324"; 
-
-        if (user) {
-            document.getElementById('user-name').innerText = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-            document.getElementById('user-username').innerText = user.username ? '@' + user.username : 'Không có username';
-            document.getElementById('user-id').innerText = user.id; document.getElementById('profile-id').innerText = user.id;
-            let roleBadge = document.getElementById('role-badge');
-            if (user.id === 5772343324) { roleBadge.innerText = "Admin"; roleBadge.className = "role-badge admin"; } else { roleBadge.innerText = "Khách hàng"; roleBadge.className = "role-badge customer"; }
-            if (user.photo_url) { document.getElementById('user-avatar').src = user.photo_url; } else { document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${user.first_name}&background=ff3366&color=fff`; }
-        }
-
-        // FETCH BALANCE TỪ SUPABASE
-        async function fetchRealBalance(userId) {
+        // Bọc toàn bộ code trong DOMContentLoaded để đảm bảo HTML đã load xong
+        document.addEventListener("DOMContentLoaded", function() {
             try {
-                let { data, error } = await supabase.from('users').select('balance').eq('user_id', userId);
-                if (error) throw error;
-                let bal = (data && data.length > 0) ? data[0].balance : 0;
-                let formattedBalance = bal.toLocaleString('vi-VN');
-                document.getElementById('display-balance').innerText = `${formattedBalance} đ`;
-                document.getElementById('profile-balance').innerText = `${formattedBalance} đ`;
-                let usdt = (bal / 25000).toFixed(2);
-                document.getElementById('display-usdt').innerText = `≈ ${usdt} USDT`;
-            } catch (error) { console.log("Lỗi lấy số dư:", error); }
-        }
+                // CẤU HÌNH SUPABASE
+                const SUPABASE_URL = "https://jukdjwdhuvlrwiulhasj.supabase.co";
+                const SUPABASE_KEY = "sb_publishable_DcGDl8VrFCDKc9mRxNmlqQ_qVm_Aysl"; 
+                const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        setTimeout(() => {
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('top-header').style.display = 'flex';
-            document.getElementById('profile-header').style.display = 'flex';
-            fetchRealBalance(currentUserId);
-        }, 800);
+                // NEON RAIN
+                const canvas = document.getElementById('neon-rain'); 
+                const ctx = canvas.getContext('2d'); 
+                let width, height, particles = [];
+                function resizeCanvas() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
+                window.addEventListener('resize', resizeCanvas); resizeCanvas(); 
+                const colors = ['#ff3366', '#00e5ff', '#ffffff'];
+                class Particle {
+                    constructor() { this.x = Math.random() * width; this.y = Math.random() * height - height; this.size = Math.random() * 2 + 1; this.speedY = Math.random() * 3 + 1; this.color = colors[Math.floor(Math.random() * colors.length)]; this.opacity = Math.random() * 0.5 + 0.3; }
+                    update() { this.y += this.speedY; if (this.y > height) { this.y = -10; this.x = Math.random() * width; } }
+                    draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fillStyle = this.color; ctx.globalAlpha = this.opacity; ctx.shadowBlur = 10; ctx.shadowColor = this.color; ctx.fill(); ctx.globalAlpha = 1; ctx.shadowBlur = 0; }
+                }
+                function initParticles() { particles = []; let count = window.innerWidth < 600 ? 50 : 100; for (let i = 0; i < count; i++) particles.push(new Particle()); }
+                function animateParticles() { ctx.clearRect(0, 0, width, height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateParticles); }
+                initParticles(); animateParticles();
 
-        setInterval(() => { fetchRealBalance(currentUserId); }, 5000);
+                let tg = window.Telegram.WebApp; tg.ready(); tg.expand(); 
+                let user = tg.initDataUnsafe?.user;
+                let currentUserId = user ? user.id : "5772343324"; 
+
+                if (user) {
+                    document.getElementById('user-name').innerText = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+                    document.getElementById('user-username').innerText = user.username ? '@' + user.username : 'Không có username';
+                    document.getElementById('user-id').innerText = user.id; document.getElementById('profile-id').innerText = user.id;
+                    let roleBadge = document.getElementById('role-badge');
+                    if (user.id === 5772343324) { roleBadge.innerText = "Admin"; roleBadge.className = "role-badge admin"; } else { roleBadge.innerText = "Khách hàng"; roleBadge.className = "role-badge customer"; }
+                    if (user.photo_url) { document.getElementById('user-avatar').src = user.photo_url; } else { document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${user.first_name}&background=ff3366&color=fff`; }
+                }
+
+                // FETCH BALANCE TỪ SUPABASE
+                async function fetchRealBalance(userId) {
+                    try {
+                        let { data, error } = await supabase.from('users').select('balance').eq('user_id', userId);
+                        if (error) throw error;
+                        let bal = (data && data.length > 0) ? data[0].balance : 0;
+                        let formattedBalance = bal.toLocaleString('vi-VN');
+                        document.getElementById('display-balance').innerText = `${formattedBalance} đ`;
+                        document.getElementById('profile-balance').innerText = `${formattedBalance} đ`;
+                        let usdt = (bal / 25000).toFixed(2);
+                        document.getElementById('display-usdt').innerText = `≈ ${usdt} USDT`;
+                    } catch (error) { console.log("Lỗi lấy số dư:", error); }
+                }
+
+                // CHẠY SAU KHI LOAD XONG 800ms
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('top-header').style.display = 'flex';
+                    document.getElementById('profile-header').style.display = 'flex';
+                    fetchRealBalance(currentUserId);
+                }, 800);
+
+                // TỰ ĐỘNG CẬP NHẬT MỖI 5 GIÂY
+                setInterval(() => { fetchRealBalance(currentUserId); }, 5000);
+
+            } catch (error) {
+                // NẾU CÓ LỖI JAVASCRIPT, BẮT BUỘC PHẢI TẮT LOADING ĐỂ HIỂN THỊ GIAO DIỆN
+                console.error("Lỗi khởi tạo:", error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('top-header').style.display = 'flex';
+                document.getElementById('profile-header').style.display = 'flex';
+            }
+        });
 
         function switchTab(tabId, element) {
             document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active'); element.classList.add('active'); tg.HapticFeedback.impactOccurred('light');
+            document.getElementById('tab-' + tabId).classList.add('active'); element.classList.add('active'); 
+            if(window.Telegram) window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
         }
-        function copyID() { let id = document.getElementById('user-id').innerText; navigator.clipboard.writeText(id); tg.showAlert("Đã copy ID Telegram: " + id); }
+        function copyID() { 
+            let id = document.getElementById('user-id').innerText; 
+            navigator.clipboard.writeText(id); 
+            if(window.Telegram) window.Telegram.WebApp.showAlert("Đã copy ID Telegram: " + id); 
+        }
         function setLang(lang, element) {
             document.querySelectorAll('.lang-toggle span').forEach(el => el.classList.remove('active')); element.classList.add('active');
             document.querySelectorAll('[data-vi]').forEach(el => { el.innerText = el.getAttribute('data-' + lang); });
             document.getElementById('current-lang').innerText = lang.toUpperCase();
-            let searchInput = document.getElementById('search-input'); searchInput.placeholder = lang === 'vi' ? 'Tìm kiếm dịch vụ...' : 'Search services...'; tg.HapticFeedback.impactOccurred('medium');
+            let searchInput = document.getElementById('search-input'); searchInput.placeholder = lang === 'vi' ? 'Tìm kiếm dịch vụ...' : 'Search services...'; 
+            if(window.Telegram) window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
         }
         function showQR() {
             let uid = document.getElementById('user-id').innerText;
