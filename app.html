@@ -79,9 +79,8 @@
     </style>
 </head>
 <body>
-    <!-- ÂM THANH (Dùng link Mixkit siêu ổn định, không bị chặn) -->
-    <audio id="rainAudio" loop src="https://assets.mixkit.co/active_storage/sfx/2515/2515.wav"></audio>
-    <audio id="thunderAudio" src="https://assets.mixkit.co/active_storage/sfx/2516/2516.wav"></audio>
+    <!-- ÂM THANH MƯA LỚN & MÈO KÊU -->
+    <audio id="rainAudio" loop src="https://cdn.pixabay.com/download/audio/2022/07/15/audio_2a4b0a1e1f.mp3?filename=rain-and-thunder-16705.mp3"></audio>
     <audio id="meowAudio" src="https://assets.mixkit.co/active_storage/sfx/93/93.wav"></audio>
 
     <div id="flash-overlay"></div>
@@ -159,35 +158,35 @@
         let allProducts = [];
 
         // ==========================================
-        // 1. ÂM THANH (ĐÃ FIX LỖI VÀ GIẢM ÂM LƯỢNG)
+        // 1. ÂM THANH (MƯA TO + MÈO KÊU)
         // ==========================================
         const rainAudio = document.getElementById('rainAudio');
-        const thunderAudio = document.getElementById('thunderAudio');
         const meowAudio = document.getElementById('meowAudio');
         
-        // Giảm âm lượng cực nhỏ
-        rainAudio.volume = 0.1; 
-        thunderAudio.volume = 0.2; 
-        meowAudio.volume = 0.3;
+        rainAudio.volume = 0.6; // Tăng âm lượng mưa lên 60%
+        meowAudio.volume = 0.4; // Âm lượng mèo 40%
 
-        let audioUnlocked = false;
+        let isRaining = false;
 
-        // Bắt sự kiện chạm để mở khóa âm thanh
-        document.body.addEventListener('touchstart', function unlockAudio() {
-            if (!audioUnlocked) {
-                rainAudio.play().catch(e => console.log("Chờ tương tác để phát mưa"));
-                audioUnlocked = true;
+        // Bắt sự kiện chạm vào màn hình
+        document.body.addEventListener('touchstart', function() {
+            // 1. Phát tiếng mưa (chỉ phát 1 lần duy nhất khi chạm lần đầu)
+            if (!isRaining) {
+                rainAudio.play().then(() => {
+                    isRaining = true;
+                }).catch(e => console.log("Lỗi phát mưa (có thể do chế độ im lặng):", e));
             }
-            // Tiếng mèo kêu mỗi lần chạm
+
+            // 2. Phát tiếng mèo kêu mỗi lần chạm
             meowAudio.currentTime = 0; 
-            meowAudio.play().catch(e => console.log("Chờ tương tác để phát mèo"));
+            meowAudio.play().catch(e => console.log("Lỗi phát mèo:", e));
             
             // Rung nhẹ
             if (window.navigator.vibrate) window.navigator.vibrate(30);
         }, { passive: true });
 
         // ==========================================
-        // 2. HIỆU ỨNG THỜI TIẾT (MƯA RÕ HƠN + SẤM SÉT)
+        // 2. HIỆU ỨNG THỜI TIẾT (MƯA + SẤM SÉT HÌNH ẢNH)
         // ==========================================
         const canvas = document.getElementById('weather-bg');
         const ctx = canvas.getContext('2d');
@@ -220,10 +219,10 @@
             constructor() {
                 this.x = Math.random() * width;
                 this.y = Math.random() * height;
-                this.length = Math.random() * 15 + 8; // Dài hơn chút
-                this.speedY = Math.random() * 6 + 6; 
+                this.length = Math.random() * 15 + 8; 
+                this.speedY = Math.random() * 8 + 8; // Tăng tốc độ rơi
                 this.speedX = -0.5; 
-                this.opacity = Math.random() * 0.4 + 0.2; // Đậm hơn chút
+                this.opacity = Math.random() * 0.5 + 0.3; // Tăng độ đậm
                 this.color = Math.random() > 0.5 ? '0, 210, 255' : '255, 42, 109';
             }
             draw() {
@@ -231,7 +230,7 @@
                 ctx.moveTo(this.x, this.y);
                 ctx.lineTo(this.x + this.speedX * 2, this.y + this.length);
                 ctx.strokeStyle = `rgba(${this.color}, ${this.opacity})`;
-                ctx.lineWidth = 1.5; // Dày hơn chút
+                ctx.lineWidth = 1.5; 
                 ctx.lineCap = 'round';
                 ctx.stroke();
             }
@@ -256,8 +255,6 @@
 
             flashOverlay.style.transition = 'none'; flashOverlay.style.opacity = '0.15';
             setTimeout(() => { flashOverlay.style.transition = 'opacity 0.4s ease-out'; flashOverlay.style.opacity = '0'; }, 50);
-            
-            if(audioUnlocked) { thunderAudio.currentTime = 0; thunderAudio.play().catch(e => console.log(e)); }
         }
 
         function animate() {
@@ -268,7 +265,7 @@
         }
 
         function initWeather() {
-            rainDrops = []; for (let i = 0; i < 50; i++) rainDrops.push(new RainDrop()); // Tăng lên 50 hạt
+            rainDrops = []; for (let i = 0; i < 60; i++) rainDrops.push(new RainDrop()); // Tăng lên 60 hạt
             particles = []; for (let i = 0; i < 30; i++) particles.push(new Particle());
             
             animate();
@@ -276,7 +273,7 @@
         }
 
         // ==========================================
-        // 3. LOGIC
+        // 3. LOGIC MINI APP
         // ==========================================
         async function fetchUserBalance() {
             const balEl = document.getElementById('user-balance');
