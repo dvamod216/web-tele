@@ -30,6 +30,11 @@
         .logo-title { font-size: 18px; font-weight: 800; background: var(--mix-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .logo-sub { font-size: 11px; color: var(--text-muted); font-weight: 600; }
         
+        /* NÚT CHUYỂN NGÔN NGỮ */
+        .lang-switch { display: flex; background: rgba(255,255,255,0.05); border-radius: 20px; padding: 3px; border: 1px solid var(--border-color); }
+        .lang-btn { padding: 4px 12px; border-radius: 16px; border: none; background: transparent; color: var(--text-muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .lang-btn.active { background: var(--secondary); color: #000; box-shadow: 0 0 10px rgba(0,210,255,0.4); }
+
         .header { padding: 16px; position: relative; z-index: 10; }
         .admin-card { display: flex; align-items: center; background: var(--panel-bg); backdrop-filter: blur(15px); padding: 12px 16px; border-radius: 16px; border: 1px solid var(--border-color); }
         .admin-avatar { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--secondary); box-shadow: 0 0 10px rgba(0,210,255,0.4); }
@@ -67,7 +72,6 @@
         .btn-vietqr { background: var(--primary-gradient); color: white; box-shadow: 0 4px 15px rgba(255,42,109,0.4);}
         .btn-usdt { background: rgba(0, 210, 255, 0.1); color: var(--secondary); border: 1px solid var(--secondary); }
 
-        /* BOTTOM NAV */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(10, 10, 15, 0.9); backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.05); z-index: 100; padding-bottom: calc(12px + env(safe-area-inset-bottom));}
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; font-weight: 600; cursor: pointer; transition: 0.2s;}
         .nav-item.active { color: var(--primary); }
@@ -90,7 +94,6 @@
     </style>
 </head>
 <body>
-    <!-- Âm thanh mưa (dùng link khác ổn định hơn) và mèo -->
     <audio id="rainAudio" loop src="https://actions.google.com/sounds/v1/weather/rain_on_roof.ogg"></audio>
     <audio id="meowAudio" src="https://actions.google.com/sounds/v1/animals/cat_purr_close.ogg"></audio>
 
@@ -102,8 +105,10 @@
             <div class="logo-title">GIAREQUOCTE</div>
             <div class="logo-sub">Mini App</div>
         </div>
-        <div class="lang-switch" style="display: flex; background: rgba(255,255,255,0.05); border-radius: 20px; padding: 3px; border: 1px solid var(--border-color);">
-            <button class="lang-btn active" style="padding: 4px 12px; border-radius: 16px; border: none; background: var(--secondary); color: #000; font-size: 12px; font-weight: 700;">VI</button>
+        <!-- NÚT CHUYỂN NGÔN NGỮ -->
+        <div class="lang-switch">
+            <button id="btn-vi" class="lang-btn active" onclick="setLang('vi')">VI</button>
+            <button id="btn-en" class="lang-btn" onclick="setLang('en')">EN</button>
         </div>
     </div>
 
@@ -118,27 +123,27 @@
     </div>
 
     <div id="page-dichvu" class="content tab-page active">
-        <div class="page-title">Dịch vụ</div>
-        <div class="page-subtitle">Khám phá kho tài nguyên số.</div>
+        <div class="page-title" id="txt-dv-title">Dịch vụ</div>
+        <div class="page-subtitle" id="txt-dv-sub">Khám phá kho tài nguyên số.</div>
         
         <div id="category-view">
             <div id="category-list" class="category-list">
-                <div style="color: #fff; text-align: center; padding: 20px;">Đang tải danh mục...</div>
+                <div style="color: #fff; text-align: center; padding: 20px;" id="txt-loading">Đang tải danh mục...</div>
             </div>
         </div>
 
         <div id="product-view" style="display: none;">
-            <button class="back-btn touch-btn" onclick="backToCategories()"><i class="fa-solid fa-arrow-left"></i> Quay lại danh mục</button>
+            <button class="back-btn touch-btn" onclick="backToCategories()"><i class="fa-solid fa-arrow-left"></i> <span id="txt-back">Quay lại danh mục</span></button>
             <div id="product-list" class="product-list"></div>
         </div>
     </div>
 
     <div id="page-naptien" class="content tab-page">
-        <div class="page-title">Nạp tiền</div>
-        <div class="page-subtitle">Hệ thống nạp tự động 24/7.</div>
+        <div class="page-title" id="txt-nap-title">Nạp tiền</div>
+        <div class="page-subtitle" id="txt-nap-sub">Hệ thống nạp tự động 24/7.</div>
         <div class="balance-card">
-            <div class="balance-label">SỐ DƯ KHẢ DỤNG</div>
-            <div class="balance-amount" id="user-balance">Đang tải...</div>
+            <div class="balance-label" id="txt-balance-label">SỐ DƯ KHẢ DỤNG</div>
+            <div class="balance-amount" id="user-balance">...</div>
             <div class="balance-usdt">≈ 0.00 USDT</div>
             <div class="btn-group">
                 <button class="btn-deposit btn-vietqr touch-btn" onclick="openQR()"><i class="fa-solid fa-qrcode"></i> VietQR</button>
@@ -147,29 +152,29 @@
         </div>
     </div>
 
-    <div id="page-lichsu" class="content tab-page"><div class="page-title">Lịch sử</div><div style="text-align: center; color: #888; padding: 50px 0;">Chưa có giao dịch.</div></div>
-    <div id="page-dangcho" class="content tab-page"><div class="page-title">Đang chờ</div><div style="text-align: center; color: #888; padding: 50px 0;">Chưa có đơn hàng.</div></div>
-    <div id="page-canhân" class="content tab-page"><div class="page-title">Cá nhân</div><div style="text-align: center; color: #888; padding: 50px 0;">Đang cập nhật...</div></div>
+    <div id="page-lichsu" class="content tab-page"><div class="page-title" id="txt-ls-title">Lịch sử</div><div style="text-align: center; color: #888; padding: 50px 0;" id="txt-ls-empty">Chưa có giao dịch.</div></div>
+    <div id="page-dangcho" class="content tab-page"><div class="page-title" id="txt-cho-title">Đang chờ</div><div style="text-align: center; color: #888; padding: 50px 0;" id="txt-cho-empty">Chưa có đơn hàng.</div></div>
+    <div id="page-canhân" class="content tab-page"><div class="page-title" id="txt-cn-title">Cá nhân</div><div style="text-align: center; color: #888; padding: 50px 0;" id="txt-cn-empty">Đang cập nhật...</div></div>
 
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('dichvu', this)"><i class="fa-solid fa-store nav-icon"></i><span>Dịch vụ</span></div>
-        <div class="nav-item" onclick="switchTab('dangcho', this)"><i class="fa-solid fa-hourglass-start nav-icon"></i><span>Đang chờ</span></div>
-        <div class="nav-item" onclick="switchTab('lichsu', this)"><i class="fa-solid fa-clock-rotate-left nav-icon"></i><span>Lịch sử</span></div>
-        <div class="nav-item" onclick="switchTab('naptien', this)"><i class="fa-solid fa-wallet nav-icon"></i><span>Nạp tiền</span></div>
-        <div class="nav-item" onclick="switchTab('canhân', this)"><i class="fa-solid fa-user nav-icon"></i><span>Cá nhân</span></div>
+        <div class="nav-item active" onclick="switchTab('dichvu', this)"><i class="fa-solid fa-store nav-icon"></i><span id="nav-dv">Dịch vụ</span></div>
+        <div class="nav-item" onclick="switchTab('dangcho', this)"><i class="fa-solid fa-hourglass-start nav-icon"></i><span id="nav-cho">Đang chờ</span></div>
+        <div class="nav-item" onclick="switchTab('lichsu', this)"><i class="fa-solid fa-clock-rotate-left nav-icon"></i><span id="nav-ls">Lịch sử</span></div>
+        <div class="nav-item" onclick="switchTab('naptien', this)"><i class="fa-solid fa-wallet nav-icon"></i><span id="nav-nap">Nạp tiền</span></div>
+        <div class="nav-item" onclick="switchTab('canhân', this)"><i class="fa-solid fa-user nav-icon"></i><span id="nav-cn">Cá nhân</span></div>
     </div>
 
     <!-- POPUP MÃ QR -->
     <div id="qrModal" class="modal">
         <div class="modal-content">
-            <div class="modal-title">Nạp Tiền Tự Động</div>
+            <div class="modal-title" id="qr-title">Nạp Tiền Tự Động</div>
             <img id="qrImage" src="" class="modal-img" alt="VietQR">
             <div class="modal-desc">
-                Chuyển khoản đến:<br>
+                <span id="qr-txt-transfer">Chuyển khoản đến:</span><br>
                 <span>1059961263 (Vietcombank)</span><br>
-                Nội dung: <span id="qrContent"></span>
+                <span id="qr-txt-content">Nội dung:</span> <span id="qrContent" style="color: var(--secondary);"></span>
             </div>
-            <button class="close-modal-btn touch-btn" onclick="closeQR()">Đóng</button>
+            <button class="close-modal-btn touch-btn" onclick="closeQR()" id="qr-btn-close">Đóng</button>
         </div>
     </div>
 
@@ -182,9 +187,86 @@
         const userId = tg.initDataUnsafe?.user?.id || 5772343324; 
 
         let allProducts = [];
+        let currentLang = 'vi';
+        let currentCategory = '';
 
         // ==========================================
-        // 1. ÂM THANH & HIỆU ỨNG
+        // TỪ ĐIỂN NGÔN NGỮ
+        // ==========================================
+        const langData = {
+            vi: {
+                dv_title: "Dịch vụ", dv_sub: "Khám phá kho tài nguyên số.", loading: "Đang tải...", back: "Quay lại danh mục",
+                nap_title: "Nạp tiền", nap_sub: "Hệ thống nạp tự động 24/7.", bal_label: "SỐ DƯ KHẢ DỤNG",
+                ls_title: "Lịch sử", ls_empty: "Chưa có giao dịch.",
+                cho_title: "Đang chờ", cho_empty: "Chưa có đơn hàng.",
+                cn_title: "Cá nhân", cn_empty: "Đang cập nhật...",
+                nav_dv: "Dịch vụ", nav_cho: "Đang chờ", nav_ls: "Lịch sử", nav_nap: "Nạp tiền", nav_cn: "Cá nhân",
+                buy: "Mua", qr_title: "Nạp Tiền Tự Động", qr_transfer: "Chuyển khoản đến:", qr_content: "Nội dung:", qr_close: "Đóng",
+                confirm_buy: "Bạn muốn mua {name} với giá {price}đ?",
+                buy_success: "MUA THÀNH CÔNG!\n\nThông tin:\n{items}",
+                error_conn: "Lỗi kết nối đến Server Render!"
+            },
+            en: {
+                dv_title: "Services", dv_sub: "Explore digital resources.", loading: "Loading...", back: "Back to categories",
+                nap_title: "Deposit", nap_sub: "24/7 Auto deposit system.", bal_label: "AVAILABLE BALANCE",
+                ls_title: "History", ls_empty: "No transactions yet.",
+                cho_title: "Pending", cho_empty: "No pending orders.",
+                cn_title: "Profile", cn_empty: "Updating...",
+                nav_dv: "Services", nav_cho: "Pending", nav_ls: "History", nav_nap: "Deposit", nav_cn: "Profile",
+                buy: "Buy", qr_title: "Auto Deposit", qr_transfer: "Transfer to:", qr_content: "Content:", qr_close: "Close",
+                confirm_buy: "Do you want to buy {name} for {price}đ?",
+                buy_success: "PURCHASE SUCCESS!\n\nInfo:\n{items}",
+                error_conn: "Error connecting to Server!"
+            }
+        };
+
+        // ==========================================
+        // HÀM ĐỔI NGÔN NGỮ
+        // ==========================================
+        function setLang(lang) {
+            currentLang = lang;
+            document.getElementById('btn-vi').classList.remove('active');
+            document.getElementById('btn-en').classList.remove('active');
+            document.getElementById('btn-' + lang).classList.add('active');
+
+            const t = langData[lang];
+            
+            // Cập nhật text tĩnh
+            document.getElementById('txt-dv-title').innerText = t.dv_title;
+            document.getElementById('txt-dv-sub').innerText = t.dv_sub;
+            document.getElementById('txt-loading').innerText = t.loading;
+            document.getElementById('txt-back').innerText = t.back;
+            document.getElementById('txt-nap-title').innerText = t.nap_title;
+            document.getElementById('txt-nap-sub').innerText = t.nap_sub;
+            document.getElementById('txt-balance-label').innerText = t.bal_label;
+            document.getElementById('txt-ls-title').innerText = t.ls_title;
+            document.getElementById('txt-ls-empty').innerText = t.ls_empty;
+            document.getElementById('txt-cho-title').innerText = t.cho_title;
+            document.getElementById('txt-cho-empty').innerText = t.cho_empty;
+            document.getElementById('txt-cn-title').innerText = t.cn_title;
+            document.getElementById('txt-cn-empty').innerText = t.cn_empty;
+            
+            // Bottom nav
+            document.getElementById('nav-dv').innerText = t.nav_dv;
+            document.getElementById('nav-cho').innerText = t.nav_cho;
+            document.getElementById('nav-ls').innerText = t.nav_ls;
+            document.getElementById('nav-nap').innerText = t.nav_nap;
+            document.getElementById('nav-cn').innerText = t.nav_cn;
+
+            // Popup QR
+            document.getElementById('qr-title').innerText = t.qr_title;
+            document.getElementById('qr-txt-transfer').innerText = t.qr_transfer;
+            document.getElementById('qr-txt-content').innerText = t.qr_content;
+            document.getElementById('qr-btn-close').innerText = t.qr_close;
+
+            // Cập nhật lại danh sách sản phẩm nếu đang mở
+            if (currentCategory) {
+                showProducts(currentCategory);
+            }
+        }
+
+        // ==========================================
+        // ÂM THANH & HIỆU ỨNG
         // ==========================================
         const rainAudio = document.getElementById('rainAudio');
         const meowAudio = document.getElementById('meowAudio');
@@ -262,7 +344,7 @@
         }
 
         // ==========================================
-        // 2. LOGIC API
+        // LOGIC API
         // ==========================================
         async function fetchUserBalance() {
             const balEl = document.getElementById('user-balance');
@@ -306,25 +388,28 @@
         }
 
         function showProducts(category) {
+            currentCategory = category;
             document.getElementById('category-view').style.display = 'none';
             document.getElementById('product-view').style.display = 'block';
 
             const filtered = allProducts.filter(p => p.category === category);
-            
+            const t = langData[currentLang];
+
             document.getElementById('product-list').innerHTML = filtered.map(p => `
                 <div class="product-item">
                     <div class="prod-icon"><i class="fa-solid fa-box-open"></i></div>
                     <div class="prod-info">
                         <div class="prod-name">${p.name}</div>
                         <div class="prod-price">${p.price.toLocaleString('vi-VN')} đ</div>
-                        <div class="prod-stock">Kho: ${p.stock === -1 ? 'Vô hạn' : p.stock}</div>
+                        <div class="prod-stock">Kho: ${p.stock === -1 ? '∞' : p.stock}</div>
                     </div>
-                    <button class="btn-buy-sm touch-btn" onclick="buyProduct('${p.nexus_id}', '${p.name}', ${p.price})">Mua</button>
+                    <button class="btn-buy-sm touch-btn" onclick="buyProduct('${p.nexus_id}', '${p.name}', ${p.price})">${t.buy}</button>
                 </div>
             `).join('');
         }
 
         function backToCategories() {
+            currentCategory = '';
             document.getElementById('product-view').style.display = 'none';
             document.getElementById('category-view').style.display = 'block';
         }
@@ -338,12 +423,14 @@
         }
 
         // ==========================================
-        // 3. MUA HÀNG VÀ QR CODE (ĐÃ FIX LỖI ĐỨNG IM)
+        // MUA HÀNG VÀ QR CODE
         // ==========================================
         async function buyProduct(id, name, price) {
-            tg.showConfirm(`Bạn muốn mua ${name} với giá ${price.toLocaleString('vi-VN')}đ?`, async function(confirmed) {
+            const t = langData[currentLang];
+            const confirmMsg = t.confirm_buy.replace('{name}', name).replace('{price}', price.toLocaleString('vi-VN'));
+            
+            tg.showConfirm(confirmMsg, async function(confirmed) {
                 if (confirmed) {
-                    // Không dùng showAlert ở đây, chỉ fetch API
                     try {
                         const res = await fetch(`${RENDER_API}/api/miniapp/buy`, {
                             method: 'POST',
@@ -354,13 +441,14 @@
                         const data = await res.json();
                         
                         if (data.success) {
-                            tg.showAlert(`MUA THÀNH CÔNG!\n\nThông tin tài khoản:\n${data.items}`);
+                            const successMsg = t.buy_success.replace('{items}', data.items);
+                            tg.showAlert(successMsg);
                             fetchUserBalance(); // Cập nhật lại số dư
                         } else {
-                            tg.showAlert(`LỖI: ${data.error}`);
+                            tg.showAlert(`LỖI / ERROR: ${data.error}`);
                         }
                     } catch (e) {
-                        tg.showAlert("Lỗi kết nối đến Server Render!");
+                        tg.showAlert(t.error_conn);
                     }
                 }
             });
@@ -381,6 +469,7 @@
             initWeather(); 
             fetchProducts();
             fetchUserBalance();
+            setLang('vi'); // Mặc định là tiếng Việt
         });
     </script>
 </body>
