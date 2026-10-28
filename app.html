@@ -79,9 +79,10 @@
     </style>
 </head>
 <body>
-    <audio id="rainAudio" loop src="https://cdn.pixabay.com/audio/2022/07/15/audio_2a4b0a1e1f.mp3"></audio>
-    <audio id="thunderAudio" src="https://cdn.pixabay.com/audio/2022/03/15/audio_7835b5e0f7.mp3"></audio>
-    <audio id="meowAudio" src="https://cdn.pixabay.com/audio/2021/08/04/audio_0625c1539c.mp3"></audio>
+    <!-- ÂM THANH (Dùng link Mixkit siêu ổn định, không bị chặn) -->
+    <audio id="rainAudio" loop src="https://assets.mixkit.co/active_storage/sfx/2515/2515.wav"></audio>
+    <audio id="thunderAudio" src="https://assets.mixkit.co/active_storage/sfx/2516/2516.wav"></audio>
+    <audio id="meowAudio" src="https://assets.mixkit.co/active_storage/sfx/93/93.wav"></audio>
 
     <div id="flash-overlay"></div>
     <canvas id="weather-bg"></canvas>
@@ -158,35 +159,46 @@
         let allProducts = [];
 
         // ==========================================
-        // 1. ÂM THANH
+        // 1. ÂM THANH (ĐÃ FIX LỖI VÀ GIẢM ÂM LƯỢNG)
         // ==========================================
         const rainAudio = document.getElementById('rainAudio');
         const thunderAudio = document.getElementById('thunderAudio');
         const meowAudio = document.getElementById('meowAudio');
-        rainAudio.volume = 0.3; thunderAudio.volume = 0.6; meowAudio.volume = 0.5;
+        
+        // Giảm âm lượng cực nhỏ
+        rainAudio.volume = 0.1; 
+        thunderAudio.volume = 0.2; 
+        meowAudio.volume = 0.3;
+
         let audioUnlocked = false;
 
+        // Bắt sự kiện chạm để mở khóa âm thanh
         document.body.addEventListener('touchstart', function unlockAudio() {
-            if (!audioUnlocked) { rainAudio.play().catch(e => console.log(e)); audioUnlocked = true; }
+            if (!audioUnlocked) {
+                rainAudio.play().catch(e => console.log("Chờ tương tác để phát mưa"));
+                audioUnlocked = true;
+            }
+            // Tiếng mèo kêu mỗi lần chạm
             meowAudio.currentTime = 0; 
-            meowAudio.play().catch(e => console.log(e));
-            if (window.navigator.vibrate) window.navigator.vibrate(50);
+            meowAudio.play().catch(e => console.log("Chờ tương tác để phát mèo"));
+            
+            // Rung nhẹ
+            if (window.navigator.vibrate) window.navigator.vibrate(30);
         }, { passive: true });
 
         // ==========================================
-        // 2. HIỆU ỨNG THỜI TIẾT (MƯA LẤT PHẤT + SẤM SÉT)
+        // 2. HIỆU ỨNG THỜI TIẾT (MƯA RÕ HƠN + SẤM SÉT)
         // ==========================================
         const canvas = document.getElementById('weather-bg');
         const ctx = canvas.getContext('2d');
         const flashOverlay = document.getElementById('flash-overlay');
         let width, height;
-        let particles = []; // Hạt sáng
-        let rainDrops = []; // Hạt mưa
+        let particles = []; 
+        let rainDrops = []; 
 
         function resizeCanvas() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
         window.addEventListener('resize', resizeCanvas); resizeCanvas(); setTimeout(resizeCanvas, 500);
 
-        // Hạt sáng (lơ lửng)
         class Particle {
             constructor() {
                 this.x = Math.random() * width; this.y = Math.random() * height;
@@ -204,15 +216,14 @@
             }
         }
 
-        // Hạt mưa (lất phất, mỏng manh)
         class RainDrop {
             constructor() {
                 this.x = Math.random() * width;
                 this.y = Math.random() * height;
-                this.length = Math.random() * 10 + 5; // Ngắn
-                this.speedY = Math.random() * 5 + 5; // Rơi chậm
-                this.speedX = -0.5; // Gió thổi nhẹ sang trái
-                this.opacity = Math.random() * 0.3 + 0.1; // Rất mờ
+                this.length = Math.random() * 15 + 8; // Dài hơn chút
+                this.speedY = Math.random() * 6 + 6; 
+                this.speedX = -0.5; 
+                this.opacity = Math.random() * 0.4 + 0.2; // Đậm hơn chút
                 this.color = Math.random() > 0.5 ? '0, 210, 255' : '255, 42, 109';
             }
             draw() {
@@ -220,7 +231,7 @@
                 ctx.moveTo(this.x, this.y);
                 ctx.lineTo(this.x + this.speedX * 2, this.y + this.length);
                 ctx.strokeStyle = `rgba(${this.color}, ${this.opacity})`;
-                ctx.lineWidth = 1; // Mảnh
+                ctx.lineWidth = 1.5; // Dày hơn chút
                 ctx.lineCap = 'round';
                 ctx.stroke();
             }
@@ -234,7 +245,6 @@
             }
         }
 
-        // Vẽ sét
         function drawLightning() {
             let startX = Math.random() * width; let startY = 0; let endY = Math.random() * (height * 0.5) + (height * 0.2);
             let x = startX; let y = startY; let color = Math.random() > 0.5 ? '0, 210, 255' : '255, 42, 109';
@@ -252,19 +262,13 @@
 
         function animate() {
             ctx.clearRect(0, 0, width, height);
-            
-            // Vẽ mưa trước (nằm dưới)
             rainDrops.forEach(r => { r.update(); r.draw(); });
-            // Vẽ hạt sáng sau (nằm trên)
             particles.forEach(p => { p.update(); p.draw(); });
-            
             requestAnimationFrame(animate);
         }
 
         function initWeather() {
-            // Chỉ tạo 40 hạt mưa để nó lất phất thôi
-            rainDrops = []; for (let i = 0; i < 40; i++) rainDrops.push(new RainDrop());
-            // Hạt sáng
+            rainDrops = []; for (let i = 0; i < 50; i++) rainDrops.push(new RainDrop()); // Tăng lên 50 hạt
             particles = []; for (let i = 0; i < 30; i++) particles.push(new Particle());
             
             animate();
