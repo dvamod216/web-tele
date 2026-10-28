@@ -90,8 +90,9 @@
     </style>
 </head>
 <body>
-    <audio id="rainAudio" loop src="https://cdn.pixabay.com/download/audio/2022/07/15/audio_2a4b0a1e1f.mp3?filename=rain-and-thunder-16705.mp3"></audio>
-    <audio id="meowAudio" src="https://assets.mixkit.co/active_storage/sfx/93/93.wav"></audio>
+    <!-- Âm thanh mưa (dùng link khác ổn định hơn) và mèo -->
+    <audio id="rainAudio" loop src="https://actions.google.com/sounds/v1/weather/rain_on_roof.ogg"></audio>
+    <audio id="meowAudio" src="https://actions.google.com/sounds/v1/animals/cat_purr_close.ogg"></audio>
 
     <div id="flash-overlay"></div>
     <canvas id="weather-bg"></canvas>
@@ -177,25 +178,25 @@
         tg.expand();
         const SUPABASE_URL = 'https://jukdjwdhuvlrwiulhasj.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_DcGDl8VrFCDKc9mRxNmlqQ_qVm_Aysl';
-        const RENDER_API = "https://my-telebot-v0l7.onrender.com"; // API Backend của mày
+        const RENDER_API = "https://my-telebot-v0l7.onrender.com"; // Link Render của mày
         const userId = tg.initDataUnsafe?.user?.id || 5772343324; 
 
         let allProducts = [];
 
         // ==========================================
-        // 1. ÂM THANH & THỜI TIẾT
+        // 1. ÂM THANH & HIỆU ỨNG
         // ==========================================
         const rainAudio = document.getElementById('rainAudio');
         const meowAudio = document.getElementById('meowAudio');
-        rainAudio.volume = 0.6; meowAudio.volume = 0.4;
+        rainAudio.volume = 0.5; meowAudio.volume = 0.5;
         let isRaining = false;
 
         document.body.addEventListener('touchstart', function() {
             if (!isRaining) {
-                rainAudio.play().then(() => isRaining = true).catch(e => console.log(e));
+                rainAudio.play().then(() => isRaining = true).catch(e => console.log("Chặn tiếng mưa"));
             }
             meowAudio.currentTime = 0; 
-            meowAudio.play().catch(e => console.log(e));
+            meowAudio.play().catch(e => console.log("Chặn tiếng mèo"));
             if (window.navigator.vibrate) window.navigator.vibrate(30);
         }, { passive: true });
 
@@ -261,7 +262,7 @@
         }
 
         // ==========================================
-        // 2. LOGIC LẤY DATA
+        // 2. LOGIC API
         // ==========================================
         async function fetchUserBalance() {
             const balEl = document.getElementById('user-balance');
@@ -337,18 +338,19 @@
         }
 
         // ==========================================
-        // 3. XỬ LÝ MUA HÀNG VÀ QR CODE
+        // 3. MUA HÀNG VÀ QR CODE (ĐÃ FIX LỖI ĐỨNG IM)
         // ==========================================
         async function buyProduct(id, name, price) {
             tg.showConfirm(`Bạn muốn mua ${name} với giá ${price.toLocaleString('vi-VN')}đ?`, async function(confirmed) {
                 if (confirmed) {
-                    tg.showAlert("Đang xử lý giao dịch...");
+                    // Không dùng showAlert ở đây, chỉ fetch API
                     try {
                         const res = await fetch(`${RENDER_API}/api/miniapp/buy`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ user_id: userId, product_key: id, quantity: 1 })
                         });
+                        
                         const data = await res.json();
                         
                         if (data.success) {
@@ -358,14 +360,13 @@
                             tg.showAlert(`LỖI: ${data.error}`);
                         }
                     } catch (e) {
-                        tg.showAlert("Lỗi kết nối đến Server!");
+                        tg.showAlert("Lỗi kết nối đến Server Render!");
                     }
                 }
             });
         }
 
         function openQR() {
-            // Hiển thị Modal QR
             const qrUrl = `https://vietqr.app/img?acc=1059961263&bank=Vietcombank&holder=DANG+VAN+AN&template=compact&showinfo=true&addInfo=NAPVI_${userId}`;
             document.getElementById('qrImage').src = qrUrl;
             document.getElementById('qrContent').innerText = `NAPVI_${userId}`;
