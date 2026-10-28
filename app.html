@@ -30,7 +30,6 @@
         .logo-title { font-size: 18px; font-weight: 800; background: var(--mix-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .logo-sub { font-size: 11px; color: var(--text-muted); font-weight: 600; }
         
-        /* NÚT CHUYỂN NGÔN NGỮ */
         .lang-switch { display: flex; background: rgba(255,255,255,0.05); border-radius: 20px; padding: 3px; border: 1px solid var(--border-color); }
         .lang-btn { padding: 4px 12px; border-radius: 16px; border: none; background: transparent; color: var(--text-muted); font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; }
         .lang-btn.active { background: var(--secondary); color: #000; box-shadow: 0 0 10px rgba(0,210,255,0.4); }
@@ -105,19 +104,22 @@
             <div class="logo-title">GIAREQUOCTE</div>
             <div class="logo-sub">Mini App</div>
         </div>
-        <!-- NÚT CHUYỂN NGÔN NGỮ -->
         <div class="lang-switch">
             <button id="btn-vi" class="lang-btn active" onclick="setLang('vi')">VI</button>
             <button id="btn-en" class="lang-btn" onclick="setLang('en')">EN</button>
         </div>
     </div>
 
+    <!-- KHU VỰC THÔNG TIN USER (ĐÃ ĐƯỢC ĐỘNG HÓA) -->
     <div class="header">
         <div class="admin-card">
-            <img src="https://ui-avatars.com/api/?name=Van+An&background=0a0a0f&color=00d2ff" class="admin-avatar">
+            <img id="user-avatar" src="https://ui-avatars.com/api/?name=User&background=0a0a0f&color=00d2ff" class="admin-avatar">
             <div class="admin-info">
-                <div class="admin-name">Văn An <span class="badge-admin">Admin</span></div>
-                <div class="admin-id">ID: 5772343324</div>
+                <div class="admin-name">
+                    <span id="user-name">Đang tải...</span> 
+                    <span class="badge-admin" id="user-role" style="display: none;">Admin</span>
+                </div>
+                <div class="admin-id">ID: <span id="user-id">...</span></div>
             </div>
         </div>
     </div>
@@ -164,7 +166,6 @@
         <div class="nav-item" onclick="switchTab('canhân', this)"><i class="fa-solid fa-user nav-icon"></i><span id="nav-cn">Cá nhân</span></div>
     </div>
 
-    <!-- POPUP MÃ QR -->
     <div id="qrModal" class="modal">
         <div class="modal-content">
             <div class="modal-title" id="qr-title">Nạp Tiền Tự Động</div>
@@ -183,12 +184,49 @@
         tg.expand();
         const SUPABASE_URL = 'https://jukdjwdhuvlrwiulhasj.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_DcGDl8VrFCDKc9mRxNmlqQ_qVm_Aysl';
-        const RENDER_API = "https://my-telebot-v0l7.onrender.com"; // Link Render của mày
-        const userId = tg.initDataUnsafe?.user?.id || 5772343324; 
+        const RENDER_API = "https://my-telebot-v0l7.onrender.com";
+        const ADMIN_ID = 5772343324;
+
+        // Biến lưu ID người dùng thực tế
+        let userId = ADMIN_ID; // Mặc định là Admin nếu chạy test ngoài Telegram
 
         let allProducts = [];
         let currentLang = 'vi';
         let currentCategory = '';
+
+        // ==========================================
+        // HÀM LOAD THÔNG TIN USER (MỚI)
+        // ==========================================
+        function loadUserInfo() {
+            const user = tg.initDataUnsafe?.user;
+            if (user) {
+                userId = user.id; // Cập nhật lại ID thực tế
+                
+                // Hiển thị tên
+                let fullName = user.first_name || 'Khách';
+                if (user.last_name) fullName += ' ' + user.last_name;
+                document.getElementById('user-name').innerText = fullName;
+                document.getElementById('user-id').innerText = user.id;
+                
+                // Hiển thị Avatar theo chữ cái đầu
+                const avatarName = encodeURIComponent(user.first_name || 'User');
+                document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${avatarName}&background=0a0a0f&color=00d2ff`;
+
+                // Phân quyền: Nếu là Admin thì hiện Badge, Khách thì ẩn đi
+                if (user.id == ADMIN_ID) {
+                    document.getElementById('user-role').style.display = 'inline-block';
+                } else {
+                    document.getElementById('user-role').style.display = 'none';
+                }
+            } else {
+                // Nếu không phải mở trong Telegram (Test web)
+                document.getElementById('user-name').innerText = "Khách Test";
+                document.getElementById('user-id').innerText = ADMIN_ID;
+            }
+            
+            // Gọi API lấy số dư với ID vừa lấy được
+            fetchUserBalance();
+        }
 
         // ==========================================
         // TỪ ĐIỂN NGÔN NGỮ
@@ -220,9 +258,6 @@
             }
         };
 
-        // ==========================================
-        // HÀM ĐỔI NGÔN NGỮ
-        // ==========================================
         function setLang(lang) {
             currentLang = lang;
             document.getElementById('btn-vi').classList.remove('active');
@@ -231,7 +266,6 @@
 
             const t = langData[lang];
             
-            // Cập nhật text tĩnh
             document.getElementById('txt-dv-title').innerText = t.dv_title;
             document.getElementById('txt-dv-sub').innerText = t.dv_sub;
             document.getElementById('txt-loading').innerText = t.loading;
@@ -246,23 +280,18 @@
             document.getElementById('txt-cn-title').innerText = t.cn_title;
             document.getElementById('txt-cn-empty').innerText = t.cn_empty;
             
-            // Bottom nav
             document.getElementById('nav-dv').innerText = t.nav_dv;
             document.getElementById('nav-cho').innerText = t.nav_cho;
             document.getElementById('nav-ls').innerText = t.nav_ls;
             document.getElementById('nav-nap').innerText = t.nav_nap;
             document.getElementById('nav-cn').innerText = t.nav_cn;
 
-            // Popup QR
             document.getElementById('qr-title').innerText = t.qr_title;
             document.getElementById('qr-txt-transfer').innerText = t.qr_transfer;
             document.getElementById('qr-txt-content').innerText = t.qr_content;
             document.getElementById('qr-btn-close').innerText = t.qr_close;
 
-            // Cập nhật lại danh sách sản phẩm nếu đang mở
-            if (currentCategory) {
-                showProducts(currentCategory);
-            }
+            if (currentCategory) { showProducts(currentCategory); }
         }
 
         // ==========================================
@@ -422,9 +451,6 @@
             if (tabId === 'naptien') fetchUserBalance();
         }
 
-        // ==========================================
-        // MUA HÀNG VÀ QR CODE
-        // ==========================================
         async function buyProduct(id, name, price) {
             const t = langData[currentLang];
             const confirmMsg = t.confirm_buy.replace('{name}', name).replace('{price}', price.toLocaleString('vi-VN'));
@@ -443,7 +469,7 @@
                         if (data.success) {
                             const successMsg = t.buy_success.replace('{items}', data.items);
                             tg.showAlert(successMsg);
-                            fetchUserBalance(); // Cập nhật lại số dư
+                            fetchUserBalance();
                         } else {
                             tg.showAlert(`LỖI / ERROR: ${data.error}`);
                         }
@@ -466,10 +492,10 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            loadUserInfo(); // Load thông tin user trước
             initWeather(); 
             fetchProducts();
-            fetchUserBalance();
-            setLang('vi'); // Mặc định là tiếng Việt
+            setLang('vi'); 
         });
     </script>
 </body>
