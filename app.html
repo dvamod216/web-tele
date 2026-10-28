@@ -3,76 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GIAREQUOCTE - Mini App</title>
+    <title>GIAREQUOCTE - Premium</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Nhúng bộ icon xịn (FontAwesome) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
-        body { background-color: #0b0b10; color: #ffffff; padding-bottom: 70px; }
-        
-        /* Header */
-        .header { padding: 15px; background: #12121a; border-bottom: 1px solid #1f1f2e; }
-        .admin-card { display: flex; align-items: center; background: #1a1a24; padding: 12px; border-radius: 12px; border: 1px solid #2a2a3a; }
-        .admin-avatar { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #00d2ff; background: #fff; object-fit: cover; }
-        .admin-info { margin-left: 12px; flex-grow: 1; }
-        .admin-name { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-        .badge-admin { background: #423000; color: #ffcc00; font-size: 10px; padding: 2px 6px; border-radius: 4px; border: 1px solid #ffcc00; font-weight: 600;}
-        .admin-id { color: #ff4d8d; font-size: 12px; margin-top: 4px; background: #2a0d18; padding: 4px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;}
-        
-        /* Main Content */
-        .content { padding: 15px; animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .page-title { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
-        .page-subtitle { color: #888; font-size: 14px; margin-bottom: 20px; }
-        
-        /* Search Bar */
-        .search-box { width: 100%; padding: 14px 16px; border-radius: 12px; background: #1a1a24; border: 1px solid #2a2a3a; color: white; font-size: 14px; margin-bottom: 20px; outline: none; transition: 0.3s; }
-        .search-box:focus { border-color: #00d2ff; box-shadow: 0 0 10px rgba(0, 210, 255, 0.2); }
+        :root {
+            --bg-color: #0a0a0f;
+            --card-bg: #15151e;
+            --primary: #ff2a6d;
+            --primary-gradient: linear-gradient(135deg, #ff2a6d, #ff4d8d);
+            --secondary: #00d2ff;
+            --text-main: #ffffff;
+            --text-muted: #8b8b9e;
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
 
-        /* Product Grid */
-        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .product-card { background: linear-gradient(145deg, #1a1a24, #15151e); border-radius: 16px; padding: 12px; border: 1px solid #2a2a3a; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 80px; overflow-x: hidden; }
         
-        .img-container { width: 100%; height: 100px; background: #0b0b10; border-radius: 10px; margin-bottom: 12px; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        .product-img { width: 100%; height: 100%; object-fit: contain; }
-        .fallback-icon { font-size: 35px; opacity: 0.8; }
-        .product-name { font-size: 14px; font-weight: 600; line-height: 1.4; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 39px; }
-        .product-price { color: #00d2ff; font-weight: 700; font-size: 16px; margin-bottom: 5px; }
-        .product-stock { font-size: 12px; color: #888; margin-bottom: 12px; }
+        /* --- HEADER --- */
+        .header { padding: 16px; background: rgba(10, 10, 15, 0.8); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 90; border-bottom: 1px solid var(--border-color); }
+        .admin-card { display: flex; align-items: center; background: var(--card-bg); padding: 12px 16px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+        .admin-avatar { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--secondary); box-shadow: 0 0 10px rgba(0, 210, 255, 0.3); object-fit: cover; }
+        .admin-info { margin-left: 14px; flex-grow: 1; }
+        .admin-name { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; letter-spacing: 0.5px;}
+        .badge-admin { background: rgba(255, 204, 0, 0.15); color: #ffcc00; font-size: 10px; padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(255, 204, 0, 0.3); font-weight: 800; text-transform: uppercase; }
+        .admin-id { color: var(--text-muted); font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 6px; font-weight: 500;}
+        .admin-id i { color: var(--primary); cursor: pointer; }
         
-        .btn-buy { width: 100%; background: linear-gradient(90deg, #ff4d8d, #ff2a6d); color: white; border: none; padding: 10px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(255, 77, 141, 0.3); }
-        .btn-buy:active { transform: scale(0.95); }
+        /* --- MAIN CONTENT --- */
+        .content { padding: 20px 16px; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* States */
-        .loading-text { text-align: center; color: #888; grid-column: span 2; padding: 30px 0; }
-        .error-text { text-align: center; color: #ff4d8d; grid-column: span 2; padding: 30px 0; background: #2a0d18; border-radius: 12px; border: 1px solid #ff4d8d; }
+        .page-title { font-size: 26px; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.5px;}
+        .page-subtitle { color: var(--text-muted); font-size: 13px; margin-bottom: 20px; font-weight: 500;}
+        
+        /* --- SEARCH BAR --- */
+        .search-container { position: relative; margin-bottom: 24px; }
+        .search-container i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 16px; }
+        .search-box { width: 100%; padding: 16px 16px 16px 46px; border-radius: 14px; background: var(--card-bg); border: 1px solid var(--border-color); color: white; font-size: 14px; font-weight: 500; outline: none; transition: all 0.3s ease; box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); }
+        .search-box:focus { border-color: var(--secondary); box-shadow: 0 0 15px rgba(0, 210, 255, 0.15); }
 
-        /* --- NẠP TIỀN UI (Giống ảnh mẫu) --- */
-        .balance-card { background: linear-gradient(145deg, #1a1a24, #12121a); border-radius: 16px; padding: 20px; border: 1px solid #2a2a3a; margin-bottom: 20px; position: relative; overflow: hidden; }
-        .balance-card::before { content: ''; position: absolute; top: -50px; right: -50px; width: 100px; height: 100px; background: rgba(255, 77, 141, 0.1); border-radius: 50%; filter: blur(20px); }
-        .balance-label { color: #888; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;}
-        .balance-amount { font-size: 32px; font-weight: 800; color: #fff; margin-bottom: 5px; text-shadow: 0 2px 10px rgba(255,255,255,0.1); }
-        .balance-usdt { color: #00d2ff; font-size: 14px; font-weight: 600; margin-bottom: 20px; }
+        /* --- PRODUCT GRID --- */
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .product-card { background: var(--card-bg); border-radius: 16px; padding: 14px; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 8px 20px rgba(0,0,0,0.3); transition: transform 0.2s; }
+        .product-card:active { transform: scale(0.97); }
         
-        .btn-group { display: flex; gap: 10px; }
-        .btn-deposit { flex: 1; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 14px; display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; border: none; transition: 0.2s; }
+        .img-container { width: 100%; height: 100px; background: #0a0a0f; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: center; align-items: center; overflow: hidden; border: 1px solid var(--border-color); }
+        .product-img { width: 100%; height: 100%; object-fit: contain; padding: 5px;}
+        .fallback-icon { font-size: 32px; color: var(--text-muted); }
+        
+        .product-name { font-size: 14px; font-weight: 700; line-height: 1.4; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 40px; color: #f0f0f5;}
+        .product-price { color: var(--secondary); font-weight: 800; font-size: 16px; margin-bottom: 6px; }
+        .product-stock { font-size: 11px; color: var(--text-muted); margin-bottom: 12px; font-weight: 600; }
+        
+        .btn-buy { width: 100%; background: var(--primary-gradient); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 42, 109, 0.3); transition: 0.2s; }
+        .btn-buy:active { transform: scale(0.95); box-shadow: 0 2px 5px rgba(255, 42, 109, 0.3); }
+        
+        /* --- STATES --- */
+        .loading-text { text-align: center; color: var(--text-muted); grid-column: span 2; padding: 40px 0; font-weight: 600; font-size: 14px;}
+        .error-text { text-align: center; color: var(--primary); grid-column: span 2; padding: 30px; background: rgba(255, 42, 109, 0.1); border-radius: 16px; border: 1px solid rgba(255, 42, 109, 0.3); font-weight: 600;}
+
+        /* --- NẠP TIỀN UI --- */
+        .balance-card { background: var(--card-bg); border-radius: 20px; padding: 24px; border: 1px solid var(--border-color); margin-bottom: 24px; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+        .balance-card::before { content: ''; position: absolute; top: -50px; right: -50px; width: 120px; height: 120px; background: var(--primary); border-radius: 50%; filter: blur(60px); opacity: 0.4; }
+        .balance-card::after { content: ''; position: absolute; bottom: -50px; left: -50px; width: 120px; height: 120px; background: var(--secondary); border-radius: 50%; filter: blur(60px); opacity: 0.2; }
+        
+        .balance-label { color: var(--text-muted); font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;}
+        .balance-amount { font-size: 36px; font-weight: 800; color: #fff; margin-bottom: 6px; letter-spacing: -1px; position: relative; z-index: 1;}
+        .balance-usdt { color: var(--secondary); font-size: 14px; font-weight: 700; margin-bottom: 24px; position: relative; z-index: 1;}
+        
+        .btn-group { display: flex; gap: 12px; position: relative; z-index: 1;}
+        .btn-deposit { flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 14px; display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; border: none; transition: 0.2s; }
         .btn-deposit:active { transform: scale(0.95); }
-        .btn-vietqr { background: linear-gradient(90deg, #ff4d8d, #ff2a6d); color: white; box-shadow: 0 4px 15px rgba(255, 77, 141, 0.3); }
-        .btn-usdt { background: transparent; color: #00d2ff; border: 1px solid #00d2ff; box-shadow: inset 0 0 10px rgba(0, 210, 255, 0.1); }
+        .btn-vietqr { background: var(--primary-gradient); color: white; box-shadow: 0 4px 15px rgba(255, 42, 109, 0.4); }
+        .btn-usdt { background: rgba(0, 210, 255, 0.1); color: var(--secondary); border: 1px solid rgba(0, 210, 255, 0.3); }
 
-        /* Empty Tab Placeholders */
-        .empty-tab { text-align: center; padding: 60px 20px; color: #888; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 50vh; }
-        .empty-tab span { font-size: 50px; margin-bottom: 15px; opacity: 0.8; filter: drop-shadow(0 0 15px rgba(255,255,255,0.1)); }
-        .empty-tab p { font-size: 15px; font-weight: 500; }
+        .empty-tab { text-align: center; padding: 80px 20px; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; height: 50vh; }
+        .empty-tab i { font-size: 60px; margin-bottom: 20px; opacity: 0.5; }
+        .empty-tab p { font-size: 15px; font-weight: 600; }
 
-        /* --- BOTTOM NAV --- */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #12121a; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #1f1f2e; z-index: 100; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #666; font-size: 11px; font-weight: 500; text-decoration: none; cursor: pointer; transition: all 0.3s ease; flex: 1; }
-        .nav-icon { font-size: 22px; margin-bottom: 5px; filter: grayscale(100%); transition: all 0.3s ease; }
-        .nav-item.active { color: #ff4d8d; }
-        .nav-item.active .nav-icon { filter: grayscale(0%) drop-shadow(0 0 8px rgba(255, 77, 141, 0.5)); transform: translateY(-2px); }
+        /* --- BOTTOM NAV (XỊN XÒ) --- */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 15, 22, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.05); z-index: 100; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); flex: 1; position: relative; }
+        .nav-icon { font-size: 20px; margin-bottom: 6px; transition: all 0.3s ease; }
+        
+        /* Hiệu ứng khi Tab được chọn */
+        .nav-item.active { color: var(--primary); }
+        .nav-item.active .nav-icon { transform: translateY(-4px) scale(1.1); filter: drop-shadow(0 4px 6px rgba(255, 42, 109, 0.4)); }
+        .nav-item.active::after { content: ''; position: absolute; bottom: -12px; width: 20px; height: 3px; background: var(--primary); border-radius: 10px; box-shadow: 0 0 10px var(--primary); transition: 0.3s; }
 
         .tab-page { display: none; }
         .tab-page.active { display: block; }
@@ -83,10 +105,10 @@
     <!-- Header -->
     <div class="header">
         <div class="admin-card">
-            <img src="https://ui-avatars.com/api/?name=Van+An&background=00d2ff&color=fff" class="admin-avatar" alt="Admin">
+            <img src="https://ui-avatars.com/api/?name=Van+An&background=0a0a0f&color=00d2ff" class="admin-avatar" alt="Admin">
             <div class="admin-info">
-                <div class="admin-name">Văn An | <span class="badge-admin">Admin</span></div>
-                <div class="admin-id">ID: 5772343324 <span style="font-size:14px;">📋</span></div>
+                <div class="admin-name">Văn An <span class="badge-admin">Admin</span></div>
+                <div class="admin-id">ID: 5772343324 <i class="fa-regular fa-copy" onclick="tg.showAlert('Đã copy ID!')"></i></div>
             </div>
         </div>
     </div>
@@ -96,29 +118,32 @@
         <div class="page-title">Dịch vụ</div>
         <div class="page-subtitle">Khám phá kho tài nguyên số.</div>
         
-        <input type="text" id="search-input" class="search-box" placeholder="🔍 Tìm kiếm sản phẩm (VD: Netflix...)">
+        <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="search-input" class="search-box" placeholder="Tìm kiếm sản phẩm...">
+        </div>
 
         <div id="product-list" class="product-grid">
-            <div class="loading-text">Đang tải sản phẩm...</div>
+            <div class="loading-text">Đang tải dữ liệu...</div>
         </div>
     </div>
 
-    <!-- ================= PAGE: NẠP TIỀN (Thiết kế mới) ================= -->
+    <!-- ================= PAGE: NẠP TIỀN ================= -->
     <div id="page-naptien" class="content tab-page">
         <div class="page-title">Nạp tiền</div>
-        <div class="page-subtitle">Nạp tự động qua VietQR.</div>
+        <div class="page-subtitle">Hệ thống nạp tự động 24/7.</div>
         
         <div class="balance-card">
-            <div class="balance-label">💳 Số dư tài khoản</div>
-            <div class="balance-amount">999.999.999 đ</div>
+            <div class="balance-label"><i class="fa-solid fa-wallet"></i> Số dư khả dụng</div>
+            <div class="balance-amount">0 đ</div>
             <div class="balance-usdt">≈ 0.00 USDT</div>
             
             <div class="btn-group">
-                <button class="btn-deposit btn-vietqr" onclick="tg.showAlert('Tính năng tạo mã QR sẽ được cập nhật!')">
-                    🏛 Nạp VietQR
+                <button class="btn-deposit btn-vietqr" onclick="tg.showAlert('Tính năng VietQR đang bảo trì!')">
+                    <i class="fa-solid fa-building-columns"></i> VietQR
                 </button>
-                <button class="btn-deposit btn-usdt" onclick="tg.showAlert('Tính năng nạp USDT sẽ được cập nhật!')">
-                    ₿ Nạp USDT
+                <button class="btn-deposit btn-usdt" onclick="tg.showAlert('Tính năng USDT đang bảo trì!')">
+                    <i class="fa-brands fa-bitcoin"></i> USDT
                 </button>
             </div>
         </div>
@@ -127,9 +152,9 @@
     <!-- ================= PAGE: ĐANG CHỜ ================= -->
     <div id="page-dangcho" class="content tab-page">
         <div class="page-title">Đang chờ</div>
-        <div class="page-subtitle">Các đơn hàng đang được xử lý.</div>
+        <div class="page-subtitle">Đơn hàng đang xử lý.</div>
         <div class="empty-tab">
-            <span>⏳</span>
+            <i class="fa-solid fa-hourglass-half"></i>
             <p>Chưa có đơn hàng nào đang chờ.</p>
         </div>
     </div>
@@ -137,9 +162,9 @@
     <!-- ================= PAGE: LỊCH SỬ ================= -->
     <div id="page-lichsu" class="content tab-page">
         <div class="page-title">Lịch sử</div>
-        <div class="page-subtitle">Lịch sử mua hàng của bạn.</div>
+        <div class="page-subtitle">Giao dịch của bạn.</div>
         <div class="empty-tab">
-            <span>📜</span>
+            <i class="fa-solid fa-clock-rotate-left"></i>
             <p>Chưa có lịch sử giao dịch.</p>
         </div>
     </div>
@@ -149,7 +174,7 @@
         <div class="page-title">Cá nhân</div>
         <div class="page-subtitle">Thông tin tài khoản.</div>
         <div class="empty-tab">
-            <span>👤</span>
+            <i class="fa-solid fa-user-astronaut"></i>
             <p>Đang cập nhật thông tin...</p>
         </div>
     </div>
@@ -157,23 +182,23 @@
     <!-- Bottom Nav -->
     <div class="bottom-nav">
         <div class="nav-item active" onclick="switchTab('dichvu', this)">
-            <span class="nav-icon">🛍️</span>
+            <i class="fa-solid fa-store nav-icon"></i>
             <span>Dịch vụ</span>
         </div>
         <div class="nav-item" onclick="switchTab('dangcho', this)">
-            <span class="nav-icon">⏳</span>
+            <i class="fa-solid fa-hourglass-start nav-icon"></i>
             <span>Đang chờ</span>
         </div>
         <div class="nav-item" onclick="switchTab('lichsu', this)">
-            <span class="nav-icon">📜</span>
+            <i class="fa-solid fa-clock-rotate-left nav-icon"></i>
             <span>Lịch sử</span>
         </div>
         <div class="nav-item" onclick="switchTab('naptien', this)">
-            <span class="nav-icon">💳</span>
+            <i class="fa-solid fa-wallet nav-icon"></i>
             <span>Nạp tiền</span>
         </div>
         <div class="nav-item" onclick="switchTab('canhân', this)">
-            <span class="nav-icon">👤</span>
+            <i class="fa-solid fa-user nav-icon"></i>
             <span>Cá nhân</span>
         </div>
     </div>
@@ -198,14 +223,14 @@
 
         function getImageHtml(imgUrl) {
             if (imgUrl && imgUrl !== 'null' && imgUrl.trim() !== '') {
-                return `<img src="${imgUrl}" class="product-img" onerror="this.parentNode.innerHTML='<span class=\\'fallback-icon\\'>📦</span>'">`;
+                return `<img src="${imgUrl}" class="product-img" onerror="this.parentNode.innerHTML='<i class=\\'fa-solid fa-box-open fallback-icon\\'></i>'">`;
             } else {
-                return `<span class="fallback-icon">📦</span>`;
+                return `<i class="fa-solid fa-box-open fallback-icon"></i>`;
             }
         }
 
         async function fetchProducts(query = '') {
-            productList.innerHTML = '<div class="loading-text">Đang tải sản phẩm...</div>';
+            productList.innerHTML = '<div class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải...</div>';
             try {
                 let url = `${SUPABASE_URL}/rest/v1/products?select=*&limit=50&order=created_at.desc`;
                 if (query) { url += `&name=ilike.%25${encodeURIComponent(query)}%25`; }
@@ -218,7 +243,7 @@
                 const products = await response.json();
                 
                 if (!products || products.length === 0) {
-                    productList.innerHTML = `<div style="grid-column: span 2; text-align: center; padding: 30px;"><div style="font-size: 40px;">📦</div><div style="color: #888; margin-top:10px;">Không tìm thấy sản phẩm nào.</div></div>`;
+                    productList.innerHTML = `<div style="grid-column: span 2; text-align: center; padding: 40px;"><i class="fa-solid fa-box-open" style="font-size: 40px; color: #8b8b9e; margin-bottom: 10px;"></i><div style="color: #8b8b9e; font-weight: 600;">Không tìm thấy sản phẩm nào.</div></div>`;
                     return;
                 }
                 
@@ -228,13 +253,13 @@
                             <div class="img-container">${getImageHtml(p.image_url)}</div>
                             <div class="product-name">${p.name}</div>
                             <div class="product-price">${formatMoney(p.price)}</div>
-                            <div class="product-stock">Kho: ${p.stock}</div>
+                            <div class="product-stock"><i class="fa-solid fa-cubes"></i> Kho: ${p.stock}</div>
                         </div>
                         <button class="btn-buy" onclick="buyProduct('${p.nexus_id}')">Mua Ngay</button>
                     </div>
                 `).join('');
             } catch (error) {
-                productList.innerHTML = `<div class="error-text">Lỗi kết nối: ${error.message}</div>`;
+                productList.innerHTML = `<div class="error-text"><i class="fa-solid fa-triangle-exclamation"></i> Lỗi kết nối: ${error.message}</div>`;
             }
         }
 
