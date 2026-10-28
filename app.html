@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GIAREQUOCTE - Premium</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Nhúng bộ icon xịn (FontAwesome) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
         :root {
             --bg-color: #0a0a0f;
-            --card-bg: #15151e;
+            --card-bg: rgba(21, 21, 30, 0.85); /* Làm trong suốt nhẹ để thấy mưa */
             --primary: #ff2a6d;
             --primary-gradient: linear-gradient(135deg, #ff2a6d, #ff4d8d);
             --secondary: #00d2ff;
@@ -23,10 +22,34 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 80px; overflow-x: hidden; }
+
+        /* --- HIỆU ỨNG THỜI TIẾT --- */
+        #weather-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; /* Nằm dưới cùng */
+            pointer-events: none; /* Không chặn click */
+            background: radial-gradient(circle at 50% 0%, #151525 0%, #0a0a0f 100%);
+        }
+        /* Hiệu ứng mây mù trôi */
+        .clouds {
+            position: fixed;
+            top: -50px; left: -50px; width: 200%; height: 200px;
+            background: url('https://raw.githubusercontent.com/JulianLaval/canvas-particle-network/master/img/clouds.png') repeat-x; /* Hoặc dùng radial gradient nếu ko thích ảnh */
+            opacity: 0.05;
+            filter: blur(20px);
+            z-index: -1;
+            pointer-events: none;
+            animation: drift 60s linear infinite;
+        }
+        @keyframes drift {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
         
         /* --- HEADER --- */
-        .header { padding: 16px; background: rgba(10, 10, 15, 0.8); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 90; border-bottom: 1px solid var(--border-color); }
-        .admin-card { display: flex; align-items: center; background: var(--card-bg); padding: 12px 16px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+        .header { padding: 16px; background: rgba(10, 10, 15, 0.6); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 90; border-bottom: 1px solid var(--border-color); }
+        .admin-card { display: flex; align-items: center; background: var(--card-bg); padding: 12px 16px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 20px rgba(0,0,0,0.4); backdrop-filter: blur(10px); }
         .admin-avatar { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--secondary); box-shadow: 0 0 10px rgba(0, 210, 255, 0.3); object-fit: cover; }
         .admin-info { margin-left: 14px; flex-grow: 1; }
         .admin-name { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; letter-spacing: 0.5px;}
@@ -38,26 +61,26 @@
         .content { padding: 20px 16px; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        .page-title { font-size: 26px; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.5px;}
+        .page-title { font-size: 26px; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.5px; text-shadow: 0 2px 10px rgba(0,0,0,0.5);}
         .page-subtitle { color: var(--text-muted); font-size: 13px; margin-bottom: 20px; font-weight: 500;}
         
         /* --- SEARCH BAR --- */
         .search-container { position: relative; margin-bottom: 24px; }
         .search-container i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 16px; }
-        .search-box { width: 100%; padding: 16px 16px 16px 46px; border-radius: 14px; background: var(--card-bg); border: 1px solid var(--border-color); color: white; font-size: 14px; font-weight: 500; outline: none; transition: all 0.3s ease; box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); }
+        .search-box { width: 100%; padding: 16px 16px 16px 46px; border-radius: 14px; background: var(--card-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-color); color: white; font-size: 14px; font-weight: 500; outline: none; transition: all 0.3s ease; box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); }
         .search-box:focus { border-color: var(--secondary); box-shadow: 0 0 15px rgba(0, 210, 255, 0.15); }
 
         /* --- PRODUCT GRID --- */
         .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .product-card { background: var(--card-bg); border-radius: 16px; padding: 14px; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 8px 20px rgba(0,0,0,0.3); transition: transform 0.2s; }
+        .product-card { background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 16px; padding: 14px; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 8px 20px rgba(0,0,0,0.3); transition: transform 0.2s; }
         .product-card:active { transform: scale(0.97); }
         
-        .img-container { width: 100%; height: 100px; background: #0a0a0f; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: center; align-items: center; overflow: hidden; border: 1px solid var(--border-color); }
+        .img-container { width: 100%; height: 100px; background: rgba(10, 10, 15, 0.5); border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: center; align-items: center; overflow: hidden; border: 1px solid var(--border-color); }
         .product-img { width: 100%; height: 100%; object-fit: contain; padding: 5px;}
         .fallback-icon { font-size: 32px; color: var(--text-muted); }
         
         .product-name { font-size: 14px; font-weight: 700; line-height: 1.4; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 40px; color: #f0f0f5;}
-        .product-price { color: var(--secondary); font-weight: 800; font-size: 16px; margin-bottom: 6px; }
+        .product-price { color: var(--secondary); font-weight: 800; font-size: 16px; margin-bottom: 6px; text-shadow: 0 0 10px rgba(0, 210, 255, 0.3);}
         .product-stock { font-size: 11px; color: var(--text-muted); margin-bottom: 12px; font-weight: 600; }
         
         .btn-buy { width: 100%; background: var(--primary-gradient); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 42, 109, 0.3); transition: 0.2s; }
@@ -68,7 +91,7 @@
         .error-text { text-align: center; color: var(--primary); grid-column: span 2; padding: 30px; background: rgba(255, 42, 109, 0.1); border-radius: 16px; border: 1px solid rgba(255, 42, 109, 0.3); font-weight: 600;}
 
         /* --- NẠP TIỀN UI --- */
-        .balance-card { background: var(--card-bg); border-radius: 20px; padding: 24px; border: 1px solid var(--border-color); margin-bottom: 24px; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+        .balance-card { background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 20px; padding: 24px; border: 1px solid var(--border-color); margin-bottom: 24px; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
         .balance-card::before { content: ''; position: absolute; top: -50px; right: -50px; width: 120px; height: 120px; background: var(--primary); border-radius: 50%; filter: blur(60px); opacity: 0.4; }
         .balance-card::after { content: ''; position: absolute; bottom: -50px; left: -50px; width: 120px; height: 120px; background: var(--secondary); border-radius: 50%; filter: blur(60px); opacity: 0.2; }
         
@@ -86,12 +109,11 @@
         .empty-tab i { font-size: 60px; margin-bottom: 20px; opacity: 0.5; }
         .empty-tab p { font-size: 15px; font-weight: 600; }
 
-        /* --- BOTTOM NAV (XỊN XÒ) --- */
+        /* --- BOTTOM NAV --- */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 15, 22, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.05); z-index: 100; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); flex: 1; position: relative; }
         .nav-icon { font-size: 20px; margin-bottom: 6px; transition: all 0.3s ease; }
         
-        /* Hiệu ứng khi Tab được chọn */
         .nav-item.active { color: var(--primary); }
         .nav-item.active .nav-icon { transform: translateY(-4px) scale(1.1); filter: drop-shadow(0 4px 6px rgba(255, 42, 109, 0.4)); }
         .nav-item.active::after { content: ''; position: absolute; bottom: -12px; width: 20px; height: 3px; background: var(--primary); border-radius: 10px; box-shadow: 0 0 10px var(--primary); transition: 0.3s; }
@@ -101,6 +123,10 @@
     </style>
 </head>
 <body>
+
+    <!-- HIỆU ỨNG NỀN -->
+    <canvas id="weather-bg"></canvas>
+    <div class="clouds"></div>
 
     <!-- Header -->
     <div class="header">
@@ -124,7 +150,7 @@
         </div>
 
         <div id="product-list" class="product-grid">
-            <div class="loading-text">Đang tải dữ liệu...</div>
+            <div class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải...</div>
         </div>
     </div>
 
@@ -212,6 +238,65 @@
         const productList = document.getElementById('product-list');
         const searchInput = document.getElementById('search-input');
         
+        // --- CODE HIỆU ỨNG MƯA RƠI ---
+        const canvas = document.getElementById('weather-bg');
+        const ctx = canvas.getContext('2d');
+        let width, height, drops = [];
+
+        function resizeCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Drop {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.length = Math.random() * 20 + 10;
+                this.speed = Math.random() * 10 + 15;
+                this.opacity = Math.random() * 0.3 + 0.1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                ctx.lineTo(this.x, this.y + this.length);
+                // Màu mưa neon xanh
+                ctx.strokeStyle = `rgba(0, 210, 255, ${this.opacity})`;
+                ctx.lineWidth = 1.5;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+            }
+            update() {
+                this.y += this.speed;
+                if (this.y > height) {
+                    this.y = -this.length;
+                    this.x = Math.random() * width;
+                }
+            }
+        }
+
+        function initRain() {
+            drops = [];
+            for (let i = 0; i < 100; i++) { // Số lượng hạt mưa (100 là đẹp)
+                drops.push(new Drop());
+            }
+        }
+
+        function animateRain() {
+            ctx.clearRect(0, 0, width, height);
+            drops.forEach(drop => {
+                drop.update();
+                drop.draw();
+            });
+            requestAnimationFrame(animateRain);
+        }
+
+        initRain();
+        animateRain();
+        // --- HẾT CODE HIỆU ỨNG MƯA ---
+
         function switchTab(tabId, element) {
             document.querySelectorAll('.tab-page').forEach(page => { page.classList.remove('active'); });
             document.getElementById('page-' + tabId).classList.add('active');
