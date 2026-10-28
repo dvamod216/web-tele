@@ -19,8 +19,6 @@
             --text-main: #ffffff;
             --text-muted: #9a9ab0;
             --border-color: rgba(255, 255, 255, 0.15);
-            
-            /* Nền Panel Xanh Hồng */
             --panel-bg: linear-gradient(135deg, rgba(0, 210, 255, 0.1), rgba(255, 42, 109, 0.1)), rgba(15, 15, 22, 0.85);
         }
 
@@ -39,13 +37,7 @@
             min-height: 100vh;
         }
 
-        /* Lớp phủ chớp sáng */
-        #flash-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #ffffff; z-index: 5; pointer-events: none; opacity: 0;
-        }
-
-        /* Canvas vẽ mưa, mây, sét */
+        #flash-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 5; pointer-events: none; opacity: 0; }
         #weather-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
 
         /* --- HEADER WEB APP --- */
@@ -63,24 +55,11 @@
         /* --- MAIN CONTENT --- */
         .content { position: relative; z-index: 10; padding: 10px 16px 20px 16px; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Chữ tiêu đề Gradient */
-        .page-title { 
-            font-size: 28px; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.5px;
-            background: var(--mix-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            display: inline-block;
-        }
+        .page-title { font-size: 28px; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.5px; background: var(--mix-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }
         .page-subtitle { color: var(--text-muted); font-size: 13px; margin-bottom: 20px; font-weight: 500;}
         
-        /* --- ADMIN CARD (Panel xanh hồng) --- */
         .header { padding: 16px; position: relative; z-index: 10; }
-        .admin-card { 
-            display: flex; align-items: center; 
-            background: var(--panel-bg); backdrop-filter: blur(15px); 
-            padding: 12px 16px; border-radius: 16px; 
-            border: 1px solid var(--border-color); 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05); 
-        }
+        .admin-card { display: flex; align-items: center; background: var(--panel-bg); backdrop-filter: blur(15px); padding: 12px 16px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 20px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05); }
         .admin-avatar { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--secondary); box-shadow: 0 0 10px rgba(0, 210, 255, 0.5); object-fit: cover; }
         .admin-info { margin-left: 14px; flex-grow: 1; }
         .admin-name { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; letter-spacing: 0.5px;}
@@ -93,16 +72,8 @@
         .search-box { width: 100%; padding: 16px 16px 16px 46px; border-radius: 14px; background: var(--panel-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-color); color: white; font-size: 14px; font-weight: 500; outline: none; transition: all 0.3s ease; }
         .search-box:focus { border-color: var(--secondary); box-shadow: 0 0 15px rgba(0, 210, 255, 0.2); }
 
-        /* --- PRODUCT GRID (Panel xanh hồng) --- */
         .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .product-card { 
-            background: var(--panel-bg); backdrop-filter: blur(10px); 
-            border-radius: 16px; padding: 14px; 
-            border: 1px solid var(--border-color); 
-            display: flex; flex-direction: column; justify-content: space-between; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,255,255,0.05); 
-            transition: all 0.3s ease; 
-        }
+        .product-card { background: var(--panel-bg); backdrop-filter: blur(10px); border-radius: 16px; padding: 14px; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 8px 20px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,255,255,0.05); transition: all 0.3s ease; }
         .product-card:active { transform: scale(0.96); border-color: var(--primary); }
         
         .img-container { width: 100%; height: 100px; background: rgba(0, 0, 0, 0.4); border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: center; align-items: center; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
@@ -113,25 +84,14 @@
         .product-price { color: var(--secondary); font-weight: 800; font-size: 16px; margin-bottom: 6px; text-shadow: 0 0 10px rgba(0, 210, 255, 0.4);}
         .product-stock { font-size: 11px; color: var(--text-muted); margin-bottom: 12px; font-weight: 600; }
         
-        .btn-buy { 
-            width: 100%; background: var(--primary-gradient); color: white; 
-            border: none; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 13px; 
-            cursor: pointer; box-shadow: 0 4px 15px rgba(255, 42, 109, 0.4); 
-            transition: 0.2s; position: relative; overflow: hidden;
-        }
+        .btn-buy { width: 100%; background: var(--primary-gradient); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 42, 109, 0.4); transition: 0.2s; position: relative; overflow: hidden; }
         .btn-buy:active { transform: scale(0.95); box-shadow: 0 0 20px rgba(255, 42, 109, 0.6); }
         
         .loading-text { text-align: center; color: var(--secondary); grid-column: span 2; padding: 40px 0; font-weight: 600; font-size: 14px;}
         .error-text { text-align: center; color: var(--primary); grid-column: span 2; padding: 30px; background: rgba(255, 42, 109, 0.1); border-radius: 16px; border: 1px solid rgba(255, 42, 109, 0.3); font-weight: 600;}
 
         /* --- NẠP TIỀN UI --- */
-        .balance-card { 
-            background: var(--panel-bg); backdrop-filter: blur(10px); 
-            border-radius: 20px; padding: 24px; 
-            border: 1px solid var(--border-color); 
-            margin-bottom: 24px; position: relative; overflow: hidden; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05); 
-        }
+        .balance-card { background: var(--panel-bg); backdrop-filter: blur(10px); border-radius: 20px; padding: 24px; border: 1px solid var(--border-color); margin-bottom: 24px; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05); }
         .balance-label { color: var(--text-muted); font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;}
         .balance-amount { font-size: 36px; font-weight: 800; color: #fff; margin-bottom: 6px; letter-spacing: -1px; position: relative; z-index: 1; text-shadow: 0 0 20px rgba(255,255,255,0.2);}
         .balance-usdt { color: var(--secondary); font-size: 14px; font-weight: 700; margin-bottom: 24px; position: relative; z-index: 1;}
@@ -150,13 +110,22 @@
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(10, 10, 15, 0.9); backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.05); z-index: 100; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); flex: 1; position: relative; }
         .nav-icon { font-size: 20px; margin-bottom: 6px; transition: all 0.3s ease; }
-        
         .nav-item.active { color: var(--primary); }
         .nav-item.active .nav-icon { transform: translateY(-4px) scale(1.1); filter: drop-shadow(0 0 8px var(--primary)); }
         .nav-item.active::after { content: ''; position: absolute; bottom: -12px; width: 24px; height: 3px; background: var(--mix-gradient); border-radius: 10px; box-shadow: 0 0 10px var(--primary); transition: 0.3s; }
 
         .tab-page { display: none; }
         .tab-page.active { display: block; }
+
+        /* --- POPUP QR CODE --- */
+        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); justify-content: center; align-items: center; }
+        .modal-content { background: var(--panel-bg); padding: 25px 20px; border-radius: 20px; border: 1px solid var(--border-color); text-align: center; width: 85%; max-width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); position: relative; animation: zoomIn 0.3s ease-out; }
+        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0;} to { transform: scale(1); opacity: 1;} }
+        .close-btn { position: absolute; top: 10px; right: 15px; color: #fff; font-size: 28px; cursor: pointer; line-height: 1; }
+        .modal-content h3 { color: var(--secondary); margin-bottom: 15px; font-size: 18px; text-shadow: 0 0 10px rgba(0, 210, 255, 0.4);}
+        .qr-image { width: 100%; max-width: 220px; border-radius: 12px; margin: 0 auto 15px auto; display: block; background: white; padding: 8px; box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+        .qr-info { font-size: 13px; color: var(--text-muted); margin-bottom: 5px; }
+        .qr-highlight { color: var(--primary); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -188,6 +157,7 @@
         </div>
     </div>
 
+    <!-- PAGE: DỊCH VỤ -->
     <div id="page-dichvu" class="content tab-page active">
         <div class="page-title" id="txt-title-dv">Dịch vụ</div>
         <div class="page-subtitle" id="txt-sub-dv">Khám phá kho tài nguyên số.</div>
@@ -200,6 +170,7 @@
         </div>
     </div>
 
+    <!-- PAGE: NẠP TIỀN -->
     <div id="page-naptien" class="content tab-page">
         <div class="page-title" id="txt-title-nap">Nạp tiền</div>
         <div class="page-subtitle" id="txt-sub-nap">Hệ thống nạp tự động 24/7.</div>
@@ -208,12 +179,13 @@
             <div class="balance-amount">0 đ</div>
             <div class="balance-usdt">≈ 0.00 USDT</div>
             <div class="btn-group">
-                <button class="btn-deposit btn-vietqr" onclick="tg.showAlert('Bảo trì!')"><i class="fa-solid fa-building-columns"></i> VietQR</button>
+                <button class="btn-deposit btn-vietqr" onclick="openQR()"><i class="fa-solid fa-qrcode"></i> VietQR</button>
                 <button class="btn-deposit btn-usdt" onclick="tg.showAlert('Bảo trì!')"><i class="fa-brands fa-bitcoin"></i> USDT</button>
             </div>
         </div>
     </div>
 
+    <!-- PAGE: ĐANG CHỜ -->
     <div id="page-dangcho" class="content tab-page">
         <div class="page-title" id="txt-title-cho">Đang chờ</div>
         <div class="page-subtitle" id="txt-sub-cho">Đơn hàng đang xử lý.</div>
@@ -223,6 +195,7 @@
         </div>
     </div>
 
+    <!-- PAGE: LỊCH SỬ -->
     <div id="page-lichsu" class="content tab-page">
         <div class="page-title" id="txt-title-ls">Lịch sử</div>
         <div class="page-subtitle" id="txt-sub-ls">Giao dịch của bạn.</div>
@@ -232,12 +205,25 @@
         </div>
     </div>
 
+    <!-- PAGE: CÁ NHÂN -->
     <div id="page-canhân" class="content tab-page">
         <div class="page-title" id="txt-title-cn">Cá nhân</div>
         <div class="page-subtitle" id="txt-sub-cn">Thông tin tài khoản.</div>
         <div class="empty-tab">
             <i class="fa-solid fa-user-astronaut"></i>
             <p id="txt-empty-cn">Đang cập nhật thông tin...</p>
+        </div>
+    </div>
+
+    <!-- MODAL QR CODE -->
+    <div id="qr-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeQR()">&times;</span>
+            <h3>Nạp Tiền VietQR</h3>
+            <img id="qr-image" src="" alt="VietQR" class="qr-image">
+            <p class="qr-info">Chủ TK: <span class="qr-highlight">DANG VAN AN</span></p>
+            <p class="qr-info">STK: <span class="qr-highlight">1059961263</span> (Vietcombank)</p>
+            <p class="qr-info" style="margin-top: 10px; font-size: 12px;">Nội dung CK tự động điền.</p>
         </div>
     </div>
 
@@ -311,40 +297,54 @@
             if (currentProducts.length > 0) renderProducts(currentProducts);
         }
 
-        // --- HIỆU ỨNG THỜI TIẾT (MƯA NHẸ + MÂY TRÔI + SẤM SÉT) ---
+        // --- XỬ LÝ MODAL MÃ QR ---
+        function openQR() {
+            // Lấy ID Telegram của user (nếu có), nếu không có thì để mặc định
+            let userId = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : "KHACH";
+            
+            // Link gốc của mày, tự động nối thêm nội dung chuyển khoản
+            const baseUrl = "https://vietqr.app/img?acc=1059961263&bank=Vietcombank&holder=DANG+VAN+AN&template=compact&showinfo=true";
+            const finalUrl = `${baseUrl}&addInfo=NAPVI_${userId}`;
+            
+            document.getElementById('qr-image').src = finalUrl;
+            document.getElementById('qr-modal').style.display = 'flex';
+        }
+
+        function closeQR() {
+            document.getElementById('qr-modal').style.display = 'none';
+        }
+
+        // --- HIỆU ỨNG THỜI TIẾT (PARTICLES RƠI + MÂY + SẤM SÉT) ---
         const canvas = document.getElementById('weather-bg');
         const ctx = canvas.getContext('2d');
-        let width, height, drops = [], clouds = [], lightning = null;
+        let width, height, particles = [], clouds = [];
         
         function resizeCanvas() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
         window.addEventListener('resize', resizeCanvas); resizeCanvas(); setTimeout(resizeCanvas, 500);
 
-        // 1. Mưa (Nhẹ và mảnh hơn)
-        class Drop {
+        class Particle {
             constructor() {
                 this.x = Math.random() * width; this.y = Math.random() * height;
-                this.length = Math.random() * 15 + 5; // Ngắn lại
-                this.speed = Math.random() * 8 + 10; // Chậm lại
-                this.opacity = Math.random() * 0.2 + 0.1; // Mờ hơn
+                this.size = Math.random() * 2.5 + 1; this.speedY = Math.random() * 1.5 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.5; this.opacity = Math.random() * 0.6 + 0.3;
                 this.colorType = Math.random() > 0.5 ? 'blue' : 'pink';
             }
             draw() {
-                ctx.beginPath(); ctx.moveTo(this.x, this.y); ctx.lineTo(this.x, this.y + this.length);
-                if(this.colorType === 'blue') { ctx.strokeStyle = `rgba(0, 210, 255, ${this.opacity})`; } 
-                else { ctx.strokeStyle = `rgba(255, 42, 109, ${this.opacity})`; }
-                ctx.lineWidth = 1; // Mảnh hơn
-                ctx.lineCap = 'round'; ctx.stroke();
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                if(this.colorType === 'blue') { ctx.fillStyle = `rgba(0, 210, 255, ${this.opacity})`; } 
+                else { ctx.fillStyle = `rgba(255, 42, 109, ${this.opacity})`; }
+                ctx.fill();
             }
-            update() { this.y += this.speed; if (this.y > height) { this.y = -this.length; this.x = Math.random() * width; this.colorType = Math.random() > 0.5 ? 'blue' : 'pink'; } }
+            update() { 
+                this.y += this.speedY; this.x += this.speedX;
+                if (this.y > height) { this.y = -10; this.x = Math.random() * width; this.colorType = Math.random() > 0.5 ? 'blue' : 'pink'; }
+            }
         }
 
-        // 2. Mây vẽ bằng Canvas (để không bị lỗi z-index)
         class Cloud {
             constructor() {
-                this.x = Math.random() * width; 
-                this.y = Math.random() * height * 0.8; 
-                this.radius = Math.random() * 100 + 100;
-                this.speed = Math.random() * 0.2 + 0.1;
+                this.x = Math.random() * width; this.y = Math.random() * height * 0.8; 
+                this.radius = Math.random() * 100 + 100; this.speed = Math.random() * 0.2 + 0.1;
                 this.color = Math.random() > 0.5 ? '0, 210, 255' : '255, 42, 109';
                 this.opacity = Math.random() * 0.1 + 0.05;
             }
@@ -352,10 +352,7 @@
                 let gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
                 gradient.addColorStop(0, `rgba(${this.color}, ${this.opacity})`);
                 gradient.addColorStop(1, `rgba(${this.color}, 0)`);
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillStyle = gradient; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fill();
             }
             update() {
                 this.x += this.speed;
@@ -363,58 +360,34 @@
             }
         }
 
-        // 3. Sấm sét (Vẽ tia sét ngoằn ngoèo)
         function drawLightning() {
-            let startX = Math.random() * width;
-            let startY = 0;
-            let endY = Math.random() * (height * 0.5) + (height * 0.2);
-            let x = startX;
-            let y = startY;
-            let color = Math.random() > 0.5 ? '0, 210, 255' : '255, 42, 109';
-
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            while (y < endY) {
-                y += Math.random() * 20 + 10;
-                x += (Math.random() - 0.5) * 40;
-                ctx.lineTo(x, y);
-            }
-            ctx.strokeStyle = `rgba(${color}, 1)`;
-            ctx.lineWidth = Math.random() * 1.5 + 0.5;
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = `rgba(${color}, 1)`;
-            ctx.stroke();
-            ctx.shadowBlur = 0;
-
-            // Chớp sáng màn hình
-            flashOverlay.style.transition = 'none';
-            flashOverlay.style.opacity = '0.15';
-            setTimeout(() => {
-                flashOverlay.style.transition = 'opacity 0.5s ease-out';
-                flashOverlay.style.opacity = '0';
-            }, 50);
+            let startX = Math.random() * width; let startY = 0; let endY = Math.random() * (height * 0.5) + (height * 0.2);
+            let x = startX; let y = startY; let color = Math.random() > 0.5 ? '0, 210, 255' : '255, 42, 109';
+            ctx.beginPath(); ctx.moveTo(x, y);
+            while (y < endY) { y += Math.random() * 20 + 10; x += (Math.random() - 0.5) * 40; ctx.lineTo(x, y); }
+            ctx.strokeStyle = `rgba(${color}, 1)`; ctx.lineWidth = Math.random() * 1.5 + 0.5;
+            ctx.shadowBlur = 15; ctx.shadowColor = `rgba(${color}, 1)`; ctx.stroke(); ctx.shadowBlur = 0;
+            flashOverlay.style.transition = 'none'; flashOverlay.style.opacity = '0.15';
+            setTimeout(() => { flashOverlay.style.transition = 'opacity 0.5s ease-out'; flashOverlay.style.opacity = '0'; }, 50);
         }
 
         function initWeather() { 
-            drops = []; for (let i = 0; i < 80; i++) drops.push(new Drop()); 
+            particles = []; for (let i = 0; i < 60; i++) particles.push(new Particle()); 
             clouds = []; for (let i = 0; i < 6; i++) clouds.push(new Cloud());
         }
         
         function animateWeather() { 
             ctx.clearRect(0, 0, width, height); 
             clouds.forEach(c => { c.update(); c.draw(); });
-            drops.forEach(d => { d.update(); d.draw(); }); 
+            particles.forEach(p => { p.update(); p.draw(); }); 
             requestAnimationFrame(animateWeather); 
         }
         
-        initWeather(); 
-        animateWeather();
+        initWeather(); animateWeather();
 
-        // Kích hoạt sấm sét ngẫu nhiên
         function triggerThunder() {
             drawLightning();
-            let nextThunder = Math.random() * 4000 + 3000; // 3-7s
-            setTimeout(triggerThunder, nextThunder);
+            setTimeout(triggerThunder, Math.random() * 5000 + 4000);
         }
         setTimeout(triggerThunder, 2000);
 
